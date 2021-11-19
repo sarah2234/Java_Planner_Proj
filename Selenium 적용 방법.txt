@@ -1,0 +1,4 @@
+1. Java Selenium 다운
+2. Chrome 버전에 맞춰 chrome driver 설치
+3. IntelliJ에 들어가서 File->Project Structure->Modules에서 Selenium 폴더에 들어있던 모든 파일을 추가
+4. chrome driver의 경로를 맞출 땐 파일 탐색기에서 주소 복사 후 \\ 대신 //로 변경 (ex: C://chromdriver/chromedriver.exe)

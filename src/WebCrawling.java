@@ -1,13 +1,11 @@
 import net.bytebuddy.asm.Advice;
 import org.openqa.selenium.*;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.chrome.*;
 import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.*;
 
-import java.time.LocalDate;
+import java.time.Duration;
+import java.time.*;
 import java.util.*;
 
 public class WebCrawling {
@@ -15,15 +13,13 @@ public class WebCrawling {
     private JavascriptExecutor javascriptExecutor;
     private Actions actions;
     private WebElement element;
-    private String url;
-    private String category;
-    private String id;
-    private String password;
-    private int cntPost; // 커밋 또는 게시글 수 카운트
+    private String url; // 깃허브 레포지토리 또는 네이버 블로그 주소
+    private String category; // 네이버 블로그 사용시 카테고리 입력
+    private int cntPost; // 커밋 또는 게시물 올린 횟수
 
     // 1. 드라이버 설치 경로
     public static String WEB_DRIVER_ID = "webdriver.chrome.driver";
-    public static String WEB_DRIVER_PATH = ".//chromedriver.exe";
+    public static String WEB_DRIVER_PATH = ".//chromedriver.exe"; // chrome driver 경로 (현재 프로젝트 폴더 안에 있음)
 
     public WebCrawling () {
         Scanner scanner = new Scanner(System.in);
@@ -34,17 +30,11 @@ public class WebCrawling {
             scanner.nextLine();
             category = scanner.nextLine();
         }
-        else {
-            System.out.print("ID : ");
-            id = scanner.next();
-            System.out.print("Password : ");
-            password = scanner.next();
-        }
 
         System.setProperty(WEB_DRIVER_ID, WEB_DRIVER_PATH); // chrome driver 경로 설정
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--start-maximized"); // 창 최대
-        options.addArguments("headless"); // 창 숨김
+        //options.addArguments("headless"); // 창 숨김
         options.addArguments("--disable-popup-blocking"); // 팝업창 막기
         driver = new ChromeDriver(options); // 옵션 적용
         javascriptExecutor = (JavascriptExecutor) driver;
@@ -66,35 +56,32 @@ public class WebCrawling {
     // GitHub 사용 시 커밋 카운트
     private int countCommits() {
         try {
-            driver.get("https://github.com/");
-            //Thread.sleep(2000);
-
-            element = driver.findElement(By.linkText("Sign in")); // Sign in 버튼
-            element.click();
-
-            //Thread.sleep(1000);
-
-            element = driver.findElement(By.id("login_field")); // 아이디 입력 칸
-            element.sendKeys(id);
-
-            element = driver.findElement(By.id("password")); // 비밀번호 칸
-            element.sendKeys(password);
-
-            element = driver.findElement(By.name("commit")); // 로그인하기
-            element.submit();
-        } catch (Exception e) { // 이미 로그인된 상태일 때
-            //e.printStackTrace();
-            System.out.println("Already Logged In.");
-        }
-
-        try {
             driver.get(url); // 레포지토리 링크
-            element.click();
-            element = driver.findElement(By.xpath("//*[@id=\"repo-content-pjax-container\"]/div/div[2]/div[1]/div[3]/div[1]/div/div[4]/ul/li/a/span/strong"));
-            cntPost = Integer.parseInt(element.getText());
-            System.out.println(cntPost);
+            WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(2)); // wait for 2 secs
+
+            element = driver.findElement(By.tagName("relative-time")); // 커밋 날짜 받아오기
+            String date_s = element.getAttribute("datetime");
+            String year_s = date_s.substring(0, 4);
+            int year_i = Integer.parseInt(year_s); // 가장 최근에 커밋한 날짜의 년도
+            String month_s = date_s.substring(5, 7);
+            int month_i = Integer.parseInt(month_s); // 가장 최근에 커밋한 날짜의 월
+            String day_s = date_s.substring(8, 10);
+            int day_i = Integer.parseInt(day_s); // 가장 최근에 커밋한 날짜의 일자
+            String hour_s = date_s.substring(11, 13);
+            int hour_i = Integer.parseInt(hour_s); // UTC 기준
+            if(hour_i + 9 >= 24) {
+                day_i++; // UTC와 한국 시각 차이 : 9시
+            }
+            LocalDate today = LocalDate.now(); // 오늘 날짜 불러오기
+            if(year_i == today.getYear() && month_i == today.getMonthValue() && day_i == today.getDayOfMonth()) {
+                cntPost++; // 게시물 올린 횟수 증가
+                System.out.println(cntPost); // 확인용 메세지
+            }
+            else {
+                System.out.println("Cannot find today's commits."); // 확인용 메세지
+            }
         } catch (Exception e) {
-            System.out.println("Error occurred while counting commits.");
+            System.out.println("Error occurred while counting commits."); // 확인용 메세지
         } finally {
             driver.close();
             return cntPost;
@@ -103,58 +90,60 @@ public class WebCrawling {
 
     // Naver 사용 시 게시글 수 카운트
     private int countPosts() {
-        WebDriverWait webDriverWait = new WebDriverWait(driver, 2); // wait for 2 secs
+        WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(2)); // wait for 2 secs
         try {
-            // 네이버는 자동 로그인에 민감한지 자동으로 로그인 할 수 없다.
-            // 따라서 아래의 코드는 사용 불가
-//            try {
-//                driver.get(url);
-//                webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("iframe"))); // wait until 'iframe' exists
-//                driver.switchTo().frame(driver.findElement(By.tagName("iframe"))); // driver is switched to iframe
-//                element = driver.findElement(By.xpath("//*[@id=\"gnb-area\"]/ul/li[4]/a")); // 로그인 버튼
-//                element.click();
-//
-//                webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"id\"]")));
-//                element = driver.findElement(By.xpath("//*[@id=\"id\"]")); // 아이디 입력
-//                element.sendKeys(id);
-//                element = driver.findElement(By.xpath("//*[@id=\"pw\"]")); // 비밀번호 입력
-//                element.sendKeys(password);
-//                element = driver.findElement(By.xpath("//*[@id=\"log.login\"]")); // 로그인 버튼
-//                element.click();
-//                Thread.sleep(2000);
-//            } catch (Exception e) { // 이미 로그인된 상태일 때
-//                //e.printStackTrace();
-//                System.out.println("Already Logged In.");
-//            }
-
             driver.get(url); // 블로그 주소
+            webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("iframe"))); // iframe이 로딩될 때까지 기다리기 (최대 2초)
             driver.switchTo().frame(driver.findElement(By.tagName("iframe"))); // iframe 안으로 이동
             //driver.switchTo().defaultContent(); // iframe 밖으로 이동
-            if(!category.equals("")) {
-                //javascriptExecutor.executeScript("window.scrollTo(0, document.body.scrollHeight)"); // 페이지의 하단까지 스크롤
-                //javascriptExecutor.executeScript("argument[0].scrollIntoView(true);", element); // 이건 왜 안 될까?
-                element = driver.findElement(By.xpath("//*[@id=\"category-list\"]/div/ul")); // 카테고리 목록
-                actions.moveToElement(element);
-                actions.perform(); // 해당 element로 스크롤
-                element = driver.findElement(By.linkText(category)); // 일치하는 카테고리 찾기
-                element.click(); // 카테고리 클릭
+            element = driver.findElement(By.xpath("//*[@id=\"blog-menu\"]/div/table/tbody/tr/td[1]/ul/li[2]/a")); // 상단의 '블로그' 링크 클릭(프롤로그가 메인 화면인 블로그인 경우를 위해)
+            element.click();
+            // 카테고리 찾기
+            try {
+                if (!category.equals("")) {
+                    //javascriptExecutor.executeScript("window.scrollTo(0, document.body.scrollHeight)"); // 페이지의 하단까지 스크롤
+                    //javascriptExecutor.executeScript("argument[0].scrollIntoView(true);", element); // 이건 왜 안 될까?
+                    element = driver.findElement(By.linkText(category)); // 카테고리 목록
+                    actions.moveToElement(element);
+                    actions.perform(); // 해당 element로 스크롤
+                    element.click(); // 카테고리 클릭
+                    webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("iframe"))); // iframe이 로딩될 때까지 기다리기
+                }
+            } catch(Exception e) {
+                System.out.println("Error occurred while searching for the category.");
             }
+
             // 카테고리 이름이 명시되어 있지 않으면 전체 게시물 내에서 찾기
-            webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.className("se_publishDate")));
-            element = driver.findElement(By.className("se_publishDate")); // 작성 날짜
+            if(isElementPresent(By.className("se_publishDate"))) {
+                element = driver.findElement(By.className("se_publishDate")); // 작성 날짜 (블로그형)
+            }
+            else {
+                element = driver.findElement(By.className("date")); // 작성 날짜 (앨범형)
+            }
+            actions.moveToElement(element);
+            actions.perform(); // 해당 element로 스크롤
             String date = element.getText(); // 작성 날짜 받아오기
-            LocalDate today = LocalDate.now(); // 금일 날짜 불러오기
-            if(date.contains(String.valueOf(today.getYear()))) // 게시물에 날짜가 적혀있으면 작성한지 하루 이상 지난 것
-                System.out.println("Cannot find today's post.");
-            else {// 오늘 쓴 게시물에 해당
+            if(date.contains(".")) // 게시물에 날짜(예: 2021.11.19)가 적혀있으면 작성한지 하루 이상 지난 것
+                System.out.println("Cannot find today's post."); // 확인용 메세지
+            else { // 오늘 쓴 게시물에 해당
                 cntPost++;
                 System.out.println("Successfully found today's post."); // 확인용 메세지
             }
-        } catch (Exception e) {
+        } catch (Exception e) { // 게시물 찾는 과정에서 에러 발생
             System.out.println("Error occurred while searching for posts."); // 확인용 메세지
         } finally {
             driver.close();
             return cntPost;
+        }
+    }
+
+    // 해당 WebElement가 있으면 true, 없으면 false
+    private Boolean isElementPresent(By locatorKey) {
+        try {
+            driver.findElement(locatorKey);
+            return true;
+        } catch (Exception e) {
+            return false;
         }
     }
 

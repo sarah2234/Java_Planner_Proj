@@ -17,24 +17,24 @@ public class WebCrawling {
     private String category; // 네이버 블로그 사용시 카테고리 입력
     private int cntPost; // 커밋 또는 게시물 올린 횟수
 
-    // 1. 드라이버 설치 경로
+    // 드라이버 설치 경로
     public static String WEB_DRIVER_ID = "webdriver.chrome.driver";
     public static String WEB_DRIVER_PATH = ".//chromedriver.exe"; // chrome driver 경로 (현재 프로젝트 폴더 안에 있음)
 
     public WebCrawling () {
         Scanner scanner = new Scanner(System.in);
         System.out.print("URL(Naver Blog 또는 GitHub) : ");
-        url = scanner.next();
+        url = scanner.next(); // 페이지 주소 입력
         if(url.contains("blog.naver")) {
             System.out.print("Please input the name of your category(if you don't use, press enter) : ");
-            scanner.nextLine();
-            category = scanner.nextLine();
+            scanner.nextLine(); // 버퍼 비우기
+            category = scanner.nextLine(); // 네이버 블로그면 카테고리 입력 (특수문자 입력 x)
         }
 
         System.setProperty(WEB_DRIVER_ID, WEB_DRIVER_PATH); // chrome driver 경로 설정
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--start-maximized"); // 창 최대
-        //options.addArguments("headless"); // 창 숨김
+        options.addArguments("headless"); // 창 숨김
         options.addArguments("--disable-popup-blocking"); // 팝업창 막기
         driver = new ChromeDriver(options); // 옵션 적용
         javascriptExecutor = (JavascriptExecutor) driver;
@@ -44,13 +44,18 @@ public class WebCrawling {
         scanner.close();
     }
 
-    public void checkPost() {
-        if(url.contains("github")) {
+    // 해당 메소드만으로 오늘 공부했는지 확인
+    public int checkPost() {
+        if(url.contains("github")) { // 깃허브 레포지토리 주소 입력 시
             countCommits();
         }
-        else if(url.contains("blog.naver")) {
+        else if(url.contains("blog.naver")) { // 네이버 블로그 주소 입력 시
             countPosts();
         }
+        else { // 잘못된 주소
+            System.out.println("Invalid webpage.");
+        }
+        return cntPost; // 현재까지 게시물 올린 횟수 리턴 (또는 커밋한 횟수 리턴. 이때 커밋한 횟수는 하루에 최대 1번으로 카운트)
     }
 
     // GitHub 사용 시 커밋 카운트
@@ -73,15 +78,15 @@ public class WebCrawling {
                 day_i++; // UTC와 한국 시각 차이 : 9시
             }
             LocalDate today = LocalDate.now(); // 오늘 날짜 불러오기
-            if(year_i == today.getYear() && month_i == today.getMonthValue() && day_i == today.getDayOfMonth()) {
+            if(year_i == today.getYear() && month_i == today.getMonthValue() && day_i == today.getDayOfMonth()) { // 오늘 날짜와 'relative-time'의 날짜가 일치
                 cntPost++; // 게시물 올린 횟수 증가
                 System.out.println(cntPost); // 확인용 메세지
             }
-            else {
+            else { // 오늘 날짜와 'relative-time'의 날짜가 불일치
                 System.out.println("Cannot find today's commits."); // 확인용 메세지
             }
-        } catch (Exception e) {
-            System.out.println("Error occurred while counting commits."); // 확인용 메세지
+        } catch (Exception e) { // 해당 레포지토리의 주소가 유효하지 않음
+            System.out.println("The repository doesn't exist."); // 확인용 메세지
         } finally {
             driver.close();
             return cntPost;
@@ -107,13 +112,13 @@ public class WebCrawling {
                     actions.moveToElement(element);
                     actions.perform(); // 해당 element로 스크롤
                     element.click(); // 카테고리 클릭
-                    webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("iframe"))); // iframe이 로딩될 때까지 기다리기
                 }
-            } catch(Exception e) {
-                System.out.println("Error occurred while searching for the category.");
+            } catch(Exception e) { // 게시물 찾는 과정에서 에러 발생
+                System.out.println("Error occurred while searching for the category."); // 확인용 메세지
             }
 
             // 카테고리 이름이 명시되어 있지 않으면 전체 게시물 내에서 찾기
+            webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("body"))); // body가 로딩될 때까지 기다리기
             if(isElementPresent(By.className("se_publishDate"))) {
                 element = driver.findElement(By.className("se_publishDate")); // 작성 날짜 (블로그형)
             }
@@ -129,8 +134,8 @@ public class WebCrawling {
                 cntPost++;
                 System.out.println("Successfully found today's post."); // 확인용 메세지
             }
-        } catch (Exception e) { // 게시물 찾는 과정에서 에러 발생
-            System.out.println("Error occurred while searching for posts."); // 확인용 메세지
+        } catch (Exception e) { // 해당 블로그의 주소가 유효하지 않음
+            System.out.println("The blog doesn't exist."); // 확인용 메세지
         } finally {
             driver.close();
             return cntPost;

@@ -1,3 +1,5 @@
+package Features;
+
 import net.bytebuddy.asm.Advice;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.*;
@@ -152,8 +154,8 @@ public class WebCrawling {
         }
     }
 
-    public static void main(String[] args) {
-        WebCrawling bot1 = new WebCrawling();
-        bot1.checkPost();
-    }
+//    public static void main(String[] args) {
+//        Features.WebCrawling bot1 = new Features.WebCrawling();
+//        bot1.checkPost();
+//    }
 }

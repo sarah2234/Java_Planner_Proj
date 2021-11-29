@@ -1,5 +1,5 @@
 package GUI_ver2;
-import GUI.create_roadmap;
+import GUI_ver2.create_roadmap;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;

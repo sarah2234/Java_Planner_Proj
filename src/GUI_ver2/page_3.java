@@ -1,16 +1,89 @@
 package GUI_ver2;
 
-import GUI.Calendar_gui;
+import GUI_ver2.Calendar_gui;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.HashMap;
+import java.util.Vector;
 
 class panel5 extends JPanel {     // 5 페이지 panel 생성
+    private Vector<String> goals = new Vector<>(); // (Cal_showWorklist)schedule_lists에 넘기기 위한 변수
+    private Vector<String> times = new Vector<>(); // (Cal_showWorklist)schedule_lists에 넘기기 위한 변수
+    private JPanel schedule_lists; // 새로운 리스트가 생성되었을 때 재할당
+
     panel5(){
+        // 스케줄 입력 패널
         setLayout(new BorderLayout());
-        add(BorderLayout.CENTER, new Cal_Inf());
+
+        JPanel scheduling = new JPanel();
+        schedule_lists = new Cal_showWorkList(goals, times);
+
+        scheduling.setLayout(null);
+        Cal_Inf cal_inf = new Cal_Inf();
+        cal_inf.setBounds(10, 10, 320, 60);
+        scheduling.add(cal_inf);
+
+        // 확인 버튼 패널
+        JButton submit = new JButton("확인");
+        submit.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String goal = cal_inf.getGoal();
+                String time = cal_inf.getTime();
+                goals.add(goal);
+                times.add(time);
+                refresh();
+            }
+        });
+
+        submit.setBounds(350,50,60, 20);
+        scheduling.add(submit);
+
+        scheduling.setBorder(new LineBorder(Color.BLUE));
+        add(BorderLayout.CENTER, scheduling);
         add(BorderLayout.NORTH, new Calendar_gui());
+        add(BorderLayout.SOUTH, schedule_lists);
+    }
+
+    // 새로 고침
+    void refresh() {
+        removeAll();
+        revalidate();
+        repaint();
+
+        // 스케줄 입력 패널
+        setLayout(new BorderLayout());
+
+        JPanel scheduling = new JPanel();
+        JPanel[] schedule_lists = {new Cal_showWorkList(goals, times)};
+
+        scheduling.setLayout(null);
+        Cal_Inf cal_inf = new Cal_Inf();
+        cal_inf.setBounds(10, 10, 320, 60);
+        scheduling.add(cal_inf);
+
+        // 확인 버튼 패널
+        JButton submit = new JButton("확인");
+        submit.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String goal = cal_inf.getGoal();
+                String time = cal_inf.getTime();
+                goals.add(goal);
+                times.add(time);
+                refresh();
+            }
+        });
+
+        submit.setBounds(350,50,60, 20);
+        scheduling.add(submit);
+
+        scheduling.setBorder(new LineBorder(Color.BLUE));
+        add(BorderLayout.CENTER, scheduling);
+        add(BorderLayout.NORTH, new Calendar_gui());
+        add(BorderLayout.SOUTH, schedule_lists[0]);
     }
 }
 

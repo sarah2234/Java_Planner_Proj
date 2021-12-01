@@ -30,9 +30,11 @@ class panel9 extends JPanel {
 
 class panel10 extends JPanel {
     private Image image; // 배경이미지
-    private JPanel signUp;
+    private boolean loggedIn[]; // 로그인 했는지 체크
 
-    public panel10() {
+    public panel10(boolean loggedIn[]) {
+        this.loggedIn = loggedIn;
+
         // 로그인 창 생성
         this.setLayout(null);
         JPanel content = new JPanel();
@@ -93,7 +95,9 @@ class panel10 extends JPanel {
                 repaint();
                 setSignUp();
             }
+
         });
+
 
         // 배경화면 생성
         image = new ImageIcon("src\\GUI_ver2\\image\\login_background_2.jpg").getImage();
@@ -183,7 +187,6 @@ class panel10 extends JPanel {
                     public void paintComponent(Graphics g) {
                         Dimension d = getSize();
                         g.drawImage(image, 0, 0, d.width, d.height, null);
-
                         setOpaque(false); // 그림 투명도
                         super.paintComponent(g);
                     }
@@ -192,6 +195,7 @@ class panel10 extends JPanel {
                 add(background);
                 revalidate();
                 repaint();
+                loggedIn[0] = true;
             }
         });
 
@@ -201,9 +205,9 @@ class panel10 extends JPanel {
 
 public class Login_gui extends JPanel
 {
-    public Login_gui() {
+    public Login_gui(boolean loggedIn[]) {
         panel9 P_9 = new panel9();
-        panel10 P_10 = new panel10();
+        panel10 P_10 = new panel10(loggedIn);
         JPanel main = new JPanel();
 
         main.setLayout(new GridLayout(1, 2));

@@ -1,7 +1,5 @@
 package GUI_ver2;
 
-import org.checkerframework.checker.units.qual.A;
-
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
@@ -100,7 +98,7 @@ class panel10 extends JPanel {
 
 
         // 배경화면 생성
-        image = new ImageIcon("src\\GUI_ver2\\image\\login_background_2.jpg").getImage();
+        image = new ImageIcon("C:\\Users\\RC\\IdeaProjects\\Java_Planner_Proj\\src\\GUI_ver2\\image\\login_background_2.jpg").getImage();
         JPanel background = new JPanel() {
             public void paintComponent(Graphics g) {
                 Dimension d = getSize();
@@ -127,7 +125,7 @@ class panel10 extends JPanel {
         this.add(content);
 
         // 배경화면 생성
-        image = new ImageIcon("src\\GUI_ver2\\image\\login_background_2.jpg").getImage();
+        image = new ImageIcon("C:\\Users\\RC\\IdeaProjects\\Java_Planner_Proj\\src\\GUI_ver2\\image\\login_background_2.jpg").getImage();
         JPanel background = new JPanel() {
             public void paintComponent(Graphics g) {
                 Dimension d = getSize();
@@ -182,7 +180,7 @@ class panel10 extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 removeAll();
-                image = new ImageIcon("src\\GUI_ver2\\image\\login_background_success.jpg").getImage();
+                image = new ImageIcon("C:\\Users\\RC\\IdeaProjects\\Java_Planner_Proj\\src\\GUI_ver2\\image\\login_background_success.jpg").getImage();
                 JPanel background = new JPanel() {
                     public void paintComponent(Graphics g) {
                         Dimension d = getSize();

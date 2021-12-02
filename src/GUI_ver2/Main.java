@@ -14,6 +14,7 @@ public class Main extends JFrame {
     private JPanel page_3 = new page_3();
     private JPanel page_4 = new page_4();
     protected JPanel login_gui = new Login_gui(loggedIn);
+    outline outline;
 
     public Main(){
         c.setLayout(null);
@@ -43,7 +44,7 @@ public class Main extends JFrame {
 
         now = login_gui;
 
-        outline outline = new outline();
+        outline = new outline();
         outline.setBounds(0,520,900,80);
         c.add(outline);
 
@@ -75,7 +76,6 @@ public class Main extends JFrame {
 
             this.add(btn_panel);
 
-
             btn_panel.add(left);
             btn_panel.add(right);
 
@@ -90,7 +90,8 @@ public class Main extends JFrame {
 
             setVisible(true);
 
-            btn1.setEnabled(false);
+            setting.setEnabled(false);
+
             //버튼 이벤트
             btn1.addActionListener(new ActionListener() {
                 @Override
@@ -101,6 +102,7 @@ public class Main extends JFrame {
                         btn2.setEnabled(true);
                         btn3.setEnabled(true);
                         btn4.setEnabled(true);
+                        setting.setEnabled(true);
 
                         //누른 버튼에 해당하는 페이지를 생성한다.
                         page_1.setVisible(true);
@@ -123,6 +125,7 @@ public class Main extends JFrame {
                         btn2.setEnabled(false);
                         btn3.setEnabled(true);
                         btn4.setEnabled(true);
+                        setting.setEnabled(true);
 
                         page_1.setVisible(false);
                         page_2.setVisible(true);
@@ -144,6 +147,7 @@ public class Main extends JFrame {
                         btn2.setEnabled(true);
                         btn3.setEnabled(false);
                         btn4.setEnabled(true);
+                        setting.setEnabled(true);
 
                         now = page_3;
                         page_1.setVisible(false);
@@ -166,6 +170,7 @@ public class Main extends JFrame {
                         btn2.setEnabled(true);
                         btn3.setEnabled(true);
                         btn4.setEnabled(false);
+                        setting.setEnabled(true);
 
                         now = page_4;
                         page_1.setVisible(false);
@@ -177,6 +182,28 @@ public class Main extends JFrame {
 
                     setVisible(true);
 
+                }
+            });
+
+            setting.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if(loggedIn[0]) {
+                        btn1.setEnabled(true);
+                        btn2.setEnabled(true);
+                        btn3.setEnabled(true);
+                        btn4.setEnabled(true);
+                        setting.setEnabled(false);
+
+                        now = page_4;
+                        page_1.setVisible(false);
+                        page_2.setVisible(false);
+                        page_3.setVisible(false);
+                        page_4.setVisible(false);
+                        login_gui.setVisible(true); // 임시로 login 페이지 띄우기
+                    }
+
+                    setVisible(true);
                 }
             });
 

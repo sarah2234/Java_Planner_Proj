@@ -115,50 +115,74 @@ public class page_2 extends JPanel{
 
         JButton btnNewButton = new JButton(Change_Cancer);
         btnNewButton.setBounds(36, 10, 100, 105);
+        //btnNewButton.setBorderPainted(false); <= 외곽선 없애는 코드. 외곽선이 있어야 버튼이 눌린 것을 가시적으로 확인 가능
+        btnNewButton.setFocusPainted(false);
         star_list.add(btnNewButton);
 
         JButton btnNewButton_1 = new JButton(Change_Leo);
         btnNewButton_1.setBounds(159, 10, 100, 105);
+        //btnNewButton_1.setBorderPainted(false);
+        btnNewButton_1.setFocusPainted(false);
         star_list.add(btnNewButton_1);
 
         JButton btnNewButton_2 = new JButton("New button");
         btnNewButton_2.setBounds(283, 10, 100, 105);
+        //btnNewButton_2.setBorderPainted(false);
+        btnNewButton_2.setFocusPainted(false);
         star_list.add(btnNewButton_2);
 
         JButton btnNewButton_3 = new JButton("New button");
         btnNewButton_3.setBounds(36, 125, 100, 105);
+        //btnNewButton_3.setBorderPainted(false);
+        btnNewButton_3.setFocusPainted(false);
         star_list.add(btnNewButton_3);
 
         JButton btnNewButton_4 = new JButton("New button");
         btnNewButton_4.setBounds(159, 125, 100, 105);
+        //btnNewButton_4.setBorderPainted(false);
+        btnNewButton_4.setFocusPainted(false);
         star_list.add(btnNewButton_4);
 
         JButton btnNewButton_5 = new JButton("New button");
         btnNewButton_5.setBounds(283, 125, 100, 105);
+        //btnNewButton_5.setBorderPainted(false);
+        btnNewButton_5.setFocusPainted(false);
         star_list.add(btnNewButton_5);
 
         JButton btnNewButton_6 = new JButton("New button");
         btnNewButton_6.setBounds(36, 240, 100, 105);
+        //btnNewButton_6.setBorderPainted(false);
+        btnNewButton_6.setFocusPainted(false);
         star_list.add(btnNewButton_6);
 
         JButton btnNewButton_7 = new JButton("New button");
         btnNewButton_7.setBounds(159, 240, 100, 105);
+        //btnNewButton_7.setBorderPainted(false);
+        btnNewButton_7.setFocusPainted(false);
         star_list.add(btnNewButton_7);
 
         JButton btnNewButton_8 = new JButton("New button");
         btnNewButton_8.setBounds(283, 240, 100, 105);
+        //btnNewButton_8.setBorderPainted(false);
+        btnNewButton_8.setFocusPainted(false);
         star_list.add(btnNewButton_8);
 
         JButton btnNewButton_6_1 = new JButton("New button");
         btnNewButton_6_1.setBounds(36, 355, 100, 105);
+        //btnNewButton_6_1.setBorderPainted(false);
+        btnNewButton_6_1.setFocusPainted(false);
         star_list.add(btnNewButton_6_1);
 
         JButton btnNewButton_6_2 = new JButton("New button");
         btnNewButton_6_2.setBounds(159, 355, 100, 105);
+        //btnNewButton_6_2.setBorderPainted(false);
+        btnNewButton_6_2.setFocusPainted(false);
         star_list.add(btnNewButton_6_2);
 
         JButton btnNewButton_6_3 = new JButton("New button");
         btnNewButton_6_3.setBounds(283, 355, 100, 105);
+        //btnNewButton_6_3.setBorderPainted(false);
+        btnNewButton_6_3.setFocusPainted(false);
         star_list.add(btnNewButton_6_3);
 
         // 버튼 액션 달기

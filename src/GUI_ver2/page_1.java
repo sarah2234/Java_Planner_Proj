@@ -1,10 +1,14 @@
 package GUI_ver2;
 
+import org.openqa.selenium.interactions.Mouse;
+
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Vector;
 
 class panel1 extends JPanel{   // 1 페이지 panel 생성
@@ -90,49 +94,208 @@ class panel1 extends JPanel{   // 1 페이지 panel 생성
 }
 
 class panel2 extends JPanel{    // 2 페이지 panel 생성
-    private Vector<daily_schedule_real> V_S = new Vector<daily_schedule_real>();
+    private JLabel plans[] = new JLabel[7];
     private int cnt = 0;
+    private Image image;
+
     public panel2(){
-        JPanel all = new JPanel(new BorderLayout());
-        JPanel center = new JPanel(new FlowLayout());
-        JPanel south_btn = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JButton s_btn = new JButton("추가");
-        JButton txt = new JButton("완료 시 나올 화면");
-        JLabel sch = new JLabel("추가 버튼을 눌러 일정을 추가하세요.");
+        this.setLayout(null);
 
-        south_btn.add(txt);
-        south_btn.add(s_btn);
-        south_btn.setBorder(new LineBorder(Color.RED,3));
-        center.add(sch);
-        center.setBorder(new LineBorder(Color.BLUE,3));
-        setLayout(new BorderLayout());
-        all.add(BorderLayout.CENTER, center);
-        all.add(BorderLayout.SOUTH, south_btn);
-        this.add(all);
+        for(int i = 0; i < 7; i++) {
+            plans[i] = new JLabel();
+            plans[i].setBounds(67, 142 + 30 * i, 308, 22);
+            plans[i].setVisible(true);
+            plans[i].setForeground(Color.WHITE);
+        }
 
-        s_btn.addActionListener(new ActionListener() {
+        drawPanel();
+    }
+
+    private void drawPanel() {
+        JPanel content = new JPanel();
+        content.setBounds(0, 0, 450, 520);
+        this.add(content);
+        content.setLayout(null);
+
+        for(int i = 0; i < 7; i++) {
+            String newPlan = plans[i].getText();
+            plans[i] = new JLabel(newPlan);
+            plans[i].setForeground(Color.WHITE);
+            plans[i].setFont(new Font("맑은 고딕", Font.PLAIN, 12));
+            plans[i].setBounds(67, 142 + 30 * i, 308, 22);
+            content.add(plans[i]);
+        }
+
+        JLabel scheduleTitle = new JLabel("추가 버튼을 눌러 일정을 추가하세요.");
+        scheduleTitle.setForeground(Color.WHITE);
+        scheduleTitle.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
+        scheduleTitle.setBounds(125, 43, 210, 49);
+        content.add(scheduleTitle);
+
+        JButton addButton = new JButton("추가");
+        addButton.setBounds(320, 425, 76, 31);
+        content.add(addButton);
+        addButton.setForeground(Color.WHITE);
+        addButton.setContentAreaFilled(false);
+        addButton.setBorderPainted(false);
+        addButton.setFont(new Font("맑은 고딕", Font.PLAIN, 16));
+
+        addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(cnt == 0){
-                    sch.setVisible(false);
+                if(cnt < 7) {
+                    removeAll();
+                    addingSchedule_gui addingSchedule = new addingSchedule_gui();
+                    addingSchedule.setBounds(85, 102, 292, 306);
+                    addingSchedule.setVisible(true);
+                    add(addingSchedule);
+                    drawPanel();
+                    revalidate();
+                    repaint();
                 }
-                center.setVisible(false);
-                daily_schedule_real new_one = new daily_schedule_real();
-                V_S.add(new_one);
-                center.add(V_S.elementAt(cnt));
-                cnt++;
-                center.setVisible(true);
             }
         });
 
-        txt.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new explain_star();
+        // 배경화면 생성
+        image = new ImageIcon("src\\GUI_ver2\\image\\background.jpeg").getImage();
+        JPanel background = new JPanel() {
+            public void paintComponent(Graphics g) {
+                Dimension d = getSize();
+                g.drawImage(image, 0, 0, d.width, d.height, null);
+
+                setOpaque(false); // 그림 투명도
+                super.paintComponent(g);
             }
-        });
+        };
+        background.setBounds(0,0,450, 530);
+        content.add(background);
+    }
+
+    class addingSchedule_gui extends JPanel {
+        JLabel addingScheduleLable;
+        JLabel timeLabel;
+        JLabel addressLabel;
+        JLabel commentLabel;
+        JTextField addressTextField;
+        JTextField commentTextField;
+        JTextField timeTextField;
+        JButton createButton;
+        Image image;
+
+        public addingSchedule_gui() {
+            this.setLayout(null);
+            //this.setBounds(73, 102, 292, 306);
+
+            for(int i = 0; i < 7 ; i++) {
+                plans[i].setVisible(false);
+            }
+
+            addingScheduleLable = new JLabel("새로운 일정 추가");
+            addingScheduleLable.setForeground(Color.WHITE);
+            addingScheduleLable.setFont(new Font("맑은 고딕", Font.PLAIN, 16));
+            addingScheduleLable.setHorizontalAlignment(SwingConstants.CENTER);
+            addingScheduleLable.setBounds(41, 10, 207, 25);
+            this.add(addingScheduleLable);
+
+            timeLabel = new JLabel("시간");
+            timeLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            timeLabel.setFont(new Font("맑은 고딕", Font.PLAIN, 14));
+            timeLabel.setForeground(Color.WHITE);
+            timeLabel.setBounds(29, 74, 65, 25);
+            timeLabel.setVisible(true);
+            this.add(timeLabel);
+
+            addressLabel = new JLabel("웹 주소");
+            addressLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            addressLabel.setForeground(Color.WHITE);
+            addressLabel.setFont(new Font("맑은 고딕", Font.PLAIN, 14));
+            addressLabel.setBounds(29, 184, 65, 25);
+            this.add(addressLabel);
+
+            addressTextField = new JTextField();
+            addressTextField.setBounds(132, 188, 116, 21);
+            addressTextField.setBackground(Color.white);
+            addressTextField.setForeground(Color.gray);
+            addressTextField.setBorder(BorderFactory.createEmptyBorder(2 , 5 , 2 , 5));
+            this.add(addressTextField);
+            //addressTextField.setColumns(10);
+
+            commentLabel = new JLabel("코멘트");
+            commentLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            commentLabel.setForeground(Color.WHITE);
+            commentLabel.setFont(new Font("맑은 고딕", Font.PLAIN, 14));
+            commentLabel.setBounds(29, 129, 65, 25);
+            this.add(commentLabel);
+
+            commentTextField = new JTextField();
+            //commentTextField.setColumns(10);
+            commentTextField.setBounds(132, 133, 116, 21);
+            commentTextField.setBackground(Color.white);
+            commentTextField.setForeground(Color.gray);
+            commentTextField.setBorder(BorderFactory.createEmptyBorder(2 , 5 , 2 , 5));
+            this.add(commentTextField);
+
+            timeTextField = new JTextField();
+            //timeTextField.setColumns(10);
+            timeTextField.setBounds(132, 78, 116, 21);
+            timeTextField.setBackground(Color.white);
+            timeTextField.setForeground(Color.gray);
+            timeTextField.setBorder(BorderFactory.createEmptyBorder(2 , 5 , 2 , 5));
+            this.add(timeTextField);
+
+            // 버튼에 마우스 대면 배경이 날아가는 오류!!
+            createButton = new JButton("생성");
+            createButton.setForeground(Color.WHITE);
+            createButton.setFont(new Font("맑은 고딕", Font.PLAIN, 16));
+            createButton.setOpaque(false);
+            createButton.setContentAreaFilled(false);
+            createButton.setBorderPainted(false);
+            createButton.setFocusPainted(false);
+            createButton.setBounds(193, 252, 76, 31);
+            createButton.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    plans[cnt].setText("* " + getTime() + " " + getComment());
+                    plans[cnt].setFont(new Font("맑은 고딕", Font.PLAIN, 12));
+                    for(JLabel plan_ : plans) {
+                        plan_.setVisible(true);
+                    }
+                    setVisible(false);
+                    removeAll();
+                    drawPanel();
+                    revalidate();
+                    repaint();
+                    cnt++;
+                }
+            });
+
+            this.add(createButton);
+
+            image = new ImageIcon("src\\GUI_ver2\\image\\rectangle.png").getImage();
+            JPanel background = new JPanel() {
+                public void paintComponent(Graphics g) {
+                    Dimension d = getSize();
+                    g.drawImage(image, 0, 0, 292, 306, null);
+                }
+            };
+            background.setBounds(0,0,450, 530);
+            this.add(background);
+        }
+
+        public String getComment() {
+            return commentTextField.getText();
+        }
+
+        public String getTime() {
+            return timeTextField.getText();
+        }
+
+        public String getAddress() {
+            return addressTextField.getText();
+        }
     }
 }
+
 
 public class page_1 extends JPanel{
     public page_1(){

@@ -1,4 +1,4 @@
-import net.bytebuddy.asm.Advice;
+
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.*;
 import org.openqa.selenium.interactions.Actions;
@@ -98,7 +98,7 @@ public class WebCrawling {
         WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(2)); // wait for 2 secs
         try {
             driver.get(url); // 블로그 주소
-            webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("iframe"))); // iframe이 로딩될 때까지 기다리기 (최대 2초)
+            //webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("iframe"))); // iframe이 로딩될 때까지 기다리기 (최대 2초)
             driver.switchTo().frame(driver.findElement(By.tagName("iframe"))); // iframe 안으로 이동
             //driver.switchTo().defaultContent(); // iframe 밖으로 이동
             element = driver.findElement(By.xpath("//*[@id=\"blog-menu\"]/div/table/tbody/tr/td[1]/ul/li[2]/a")); // 상단의 '블로그' 링크 클릭(프롤로그가 메인 화면인 블로그인 경우를 위해)
@@ -118,7 +118,7 @@ public class WebCrawling {
             }
 
             // 카테고리 이름이 명시되어 있지 않으면 전체 게시물 내에서 찾기
-            webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("body"))); // body가 로딩될 때까지 기다리기
+            //webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("body"))); // body가 로딩될 때까지 기다리기
             if(isElementPresent(By.className("se_publishDate"))) {
                 element = driver.findElement(By.className("se_publishDate")); // 작성 날짜 (블로그형)
             }

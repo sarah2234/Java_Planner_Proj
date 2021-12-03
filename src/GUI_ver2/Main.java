@@ -10,9 +10,8 @@ public class Main extends JFrame {
     private Container c = getContentPane();
     protected boolean loggedIn[] = new boolean[1];
     private JPanel page_1 = new page_1();
-    private JPanel page_2 = new page_2();
-    private JPanel page_3 = new page_3();
-    private JPanel page_4 = new page_4();
+    private JPanel page_2 = new page_3();
+    private JPanel page_3 = new page_4();
     protected JPanel login_gui = new Login_gui(loggedIn);
     outline outline;
 
@@ -33,10 +32,6 @@ public class Main extends JFrame {
         page_3.setBounds(0,0,885,520);
         page_3.setVisible(false);
         c.add(page_3);
-        page_4.setLayout(new GridLayout());
-        page_4.setBounds(0,0,885,520);
-        page_4.setVisible(false);
-        c.add(page_4);
         login_gui.setLayout(new GridLayout());
         login_gui.setBounds(0,0,885,520);
         login_gui.setVisible(true);
@@ -70,7 +65,6 @@ public class Main extends JFrame {
             JButton btn1 = new JButton("1 장");
             JButton btn2 = new JButton("2 장");
             JButton btn3 = new JButton("3 장");
-            JButton btn4 = new JButton("4 장");
             JButton setting = new JButton("My page");
             JButton end = new JButton("종료");
 
@@ -85,7 +79,6 @@ public class Main extends JFrame {
             right.add(btn1);
             right.add(btn2);
             right.add(btn3);
-            right.add(btn4);
             //프레임 설정
 
             setVisible(true);
@@ -101,14 +94,12 @@ public class Main extends JFrame {
                         btn1.setEnabled(false);
                         btn2.setEnabled(true);
                         btn3.setEnabled(true);
-                        btn4.setEnabled(true);
                         setting.setEnabled(true);
 
                         //누른 버튼에 해당하는 페이지를 생성한다.
                         page_1.setVisible(true);
                         page_2.setVisible(false);
                         page_3.setVisible(false);
-                        page_4.setVisible(false);
                         login_gui.setVisible(false);
                         now = page_1;
                     }
@@ -124,13 +115,11 @@ public class Main extends JFrame {
                         btn1.setEnabled(true);
                         btn2.setEnabled(false);
                         btn3.setEnabled(true);
-                        btn4.setEnabled(true);
                         setting.setEnabled(true);
 
                         page_1.setVisible(false);
                         page_2.setVisible(true);
                         page_3.setVisible(false);
-                        page_4.setVisible(false);
                         login_gui.setVisible(false);
                         now = page_2;
                     }
@@ -146,14 +135,12 @@ public class Main extends JFrame {
                         btn1.setEnabled(true);
                         btn2.setEnabled(true);
                         btn3.setEnabled(false);
-                        btn4.setEnabled(true);
                         setting.setEnabled(true);
 
                         now = page_3;
                         page_1.setVisible(false);
                         page_2.setVisible(false);
                         page_3.setVisible(true);
-                        page_4.setVisible(false);
                         login_gui.setVisible(false);
                     }
 
@@ -162,28 +149,6 @@ public class Main extends JFrame {
                 }
             });
 
-            btn4.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    if(loggedIn[0]) {
-                        btn1.setEnabled(true);
-                        btn2.setEnabled(true);
-                        btn3.setEnabled(true);
-                        btn4.setEnabled(false);
-                        setting.setEnabled(true);
-
-                        now = page_4;
-                        page_1.setVisible(false);
-                        page_2.setVisible(false);
-                        page_3.setVisible(false);
-                        page_4.setVisible(true);
-                        login_gui.setVisible(false);
-                    }
-
-                    setVisible(true);
-
-                }
-            });
 
             setting.addActionListener(new ActionListener() {
                 @Override
@@ -192,14 +157,12 @@ public class Main extends JFrame {
                         btn1.setEnabled(true);
                         btn2.setEnabled(true);
                         btn3.setEnabled(true);
-                        btn4.setEnabled(true);
                         setting.setEnabled(false);
 
-                        now = page_4;
+                        now = page_3;
                         page_1.setVisible(false);
                         page_2.setVisible(false);
                         page_3.setVisible(false);
-                        page_4.setVisible(false);
                         login_gui.setVisible(true); // 임시로 login 페이지 띄우기
                     }
 

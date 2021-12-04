@@ -3,7 +3,7 @@ package GUI_ver2;
 import javax.swing.*;
 import java.awt.*;
 
-public class List_RoadMap extends JPanel {
+public class List_RoadMap extends JPanel {   // 로드맵 리스트의 값을 받아야 한다. DB에 연결해서 값을 전달 받아야 함.
     public List_RoadMap(int i){
         setLayout(null);
 
@@ -34,7 +34,7 @@ public class List_RoadMap extends JPanel {
 
         JButton join = new JButton("참여");
         join.setFont(new Font("굴림", Font.PLAIN, 8));
-        join.setBounds(385, 0, 50, 30);
+        join.setBounds(385, 0, 60, 30);
         add(join);
     }
 }

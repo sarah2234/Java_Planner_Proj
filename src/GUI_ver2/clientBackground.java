@@ -26,6 +26,7 @@ public class clientBackground {
 
     public void connet() {      //server와 연결
         try {
+            //socket host값은 자신의 컴퓨터 주소로 바꿔야 한다.
             socket = new Socket("192.168.217.1", 7777);  //180.64.51.37은 현재 serverPC의 공인 ip주소 값
             System.out.println("서버 연결됨.");
 

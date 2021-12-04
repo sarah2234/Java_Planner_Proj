@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.util.Vector;
 
 class panel7 extends JPanel{     // 7 페이지 panel 생성
+    //어떤 요일이 true면 그 요일에 로드맵을 하겠다는 의미
     private Boolean[] DayOfWeek_bool = {false,false,false,false,false,false,false};
     private JTextField Goal_txt = new JTextField();
     private JTextField Period_txt = new JTextField();
@@ -15,8 +16,9 @@ class panel7 extends JPanel{     // 7 페이지 panel 생성
     private JTextField HowTo_txt = new JTextField();
     public panel7(){
         String[] measure = {"타이머","블로그","Github"};
-        JComboBox<String> how_to = new JComboBox<String>(measure);
+        JComboBox<String> how_to = new JComboBox<String>(measure); // 측정방법 콤보박스
 
+        //배치하기
         setLayout(null);
 
         JPanel panel = new JPanel();
@@ -209,7 +211,9 @@ class panel7 extends JPanel{     // 7 페이지 panel 생성
                     Sun.setBackground(Color.BLUE);
             }
         });
+        ////// 여기까지 요일에 관한 버튼 이벤트
 
+        // 작성한 모든 값을 받아오고 DB에 연결해줘야 하는 코드를 작성해야함.
         Save_btn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -236,6 +240,7 @@ class panel7 extends JPanel{     // 7 페이지 panel 생성
             }
         });
     }
+    // 후에 값을 받아오는 함수를 미리 몇개 작성
     public String getgoal(){ return  Goal_txt.getText(); }
 
     public String getperiod(){ return  Period_txt.getText(); }
@@ -246,9 +251,10 @@ class panel7 extends JPanel{     // 7 페이지 panel 생성
 class panel8 extends JPanel{     // 8 페이지 panel 생성
     private JTextField Search_txt;
     private int roadmap_num=3;
-    private Vector<List_RoadMap> V_List = new Vector<List_RoadMap>();
+    private Vector<List_RoadMap> V_List = new Vector<List_RoadMap>();   //받아온 로드맵 값을 넣고, 출력하게 하는 벡터
     private int cnt=0;
     public panel8(){
+        //배치 시작
         setLayout(null);
 
         Search_txt = new JTextField();
@@ -304,16 +310,19 @@ class panel8 extends JPanel{     // 8 페이지 panel 생성
         Join.setBounds(375, 0, 80, 45);
         North.add(Join);
 
+        //중앙 패널에 Vector를 이용해서 값을 출력해줄 것이다.
         JPanel Center = new JPanel();
         Center.setBounds(0, 45, 450, 330);
         All.add(Center);
         Center.setLayout(null);
 
+        // 다음으로 넘어가는 버튼, 이전으로 넘어가는 버튼 2개 생성해서 넣을 패널
         JPanel South = new JPanel();
         South.setBounds(0, 375, 450, 60);
         All.add(South);
         South.setLayout(null);
 
+        // 처음에는 이전 페이지가 없으니 비활성화, cnt변수를 이용해서 cnt=0이면 비활성화, 아니면 활성화
         JButton left = new JButton("◀");
         left.setBounds(5, 5, 50, 50);
         South.add(left);
@@ -333,6 +342,7 @@ class panel8 extends JPanel{     // 8 페이지 panel 생성
             Center.add(V_List.elementAt(i));
         }
 
+        //버튼 이벤트(페이지 넘기기)
         left.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

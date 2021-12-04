@@ -26,7 +26,7 @@ public class clientBackground {
 
     public void connet() {      //server와 연결
         try {
-            socket = new Socket("180.64.51.37", 7777);  //180.64.51.37은 현재 serverPC의 공인 ip주소 값
+            socket = new Socket("192.168.217.1", 7777);  //180.64.51.37은 현재 serverPC의 공인 ip주소 값
             System.out.println("서버 연결됨.");
 
             out = new DataOutputStream(socket.getOutputStream());   //서버에게 줄 값

@@ -1,6 +1,6 @@
 package GUI_ver2;
 
-import static GUI_ver2.Main.main;
+//import static GUI_ver2.Main.main;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;

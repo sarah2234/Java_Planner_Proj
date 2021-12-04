@@ -1,6 +1,6 @@
 package GUI_ver2;
 
-import GUI_ver2.clientBackground;
+//import GUI_ver2.clientBackground;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

@@ -38,7 +38,7 @@ public class serverBackground {
     }
 
     public static void main(String[] args) throws IOException {
-        Network.server.ServerBackground serverBackground = new Network.server.ServerBackground(); //ServerBackground 객체 생성
+        serverBackground serverBackground = new serverBackground(); //ServerBackground 객체 생성
         serverBackground.setting(); //ServerBackground 객체 세팅
     }
 
@@ -90,7 +90,7 @@ public class serverBackground {
             in = new DataInputStream(socket.getInputStream());      //사용자로부터 입력 받은 값
             nick = in.readUTF();
             addClient(nick, out);
-            System.out.println("Receiver" + nick);
+            System.out.println("Receiver " + nick);
         }
 
         public void run() {     //사용자로부터 받을 내용
@@ -98,7 +98,7 @@ public class serverBackground {
                 while (in != null) {
                     msg = in.readUTF();
                     System.out.println(msg);
-                    String[] token = msg.split("#");
+                    String[] token = msg.split("#") ;
                     if("pwd".equals(token[0])) {         //아이디는 nick, 비밀번호는 pwd -> DB에서 비교 후 맞으면 check 뿌리기
                         sendOne(nick, "pwd#" + "check");     //사용자로부터 받은 내용을 사용자에게 뿌림, 단 문자열에 # 포함되면 안됨
                         gui.appendMsg(msg);              //사용자로부터 받은 내용을 서버 gui에 뿌림

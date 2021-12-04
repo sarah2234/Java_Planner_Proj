@@ -1,5 +1,6 @@
 package GUI_ver2;
 
+import GUI_ver2.clientBackground;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,6 +14,12 @@ public class Main extends JFrame {
     private JPanel page_2 = new page_3();
     private JPanel page_3 = new page_4();
     protected JPanel login_gui = new Login_gui(loggedIn);
+    static clientBackground  client = new clientBackground();
+    static String nickName=null;
+    //setGui
+    //connet
+    //sendMessage
+    //setNickname
     outline outline;
 
     public Main(){
@@ -51,7 +58,15 @@ public class Main extends JFrame {
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-
+        client.setMgui(this);    //nickName 입력시 로그인, id 역할을 한다
+        while (true) {
+            client.setNickname(nickName);   //nickName 설정
+            if(nickName != null) {
+                System.out.println(nickName);
+                client.connet();    //서버와 연결
+                break;
+            }
+        }
     }
 
     class outline extends JPanel {

@@ -6,6 +6,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.RoundRectangle2D;
+import static GUI_ver2.Main.client;
 
 class panel9 extends JPanel {
     private Image image; // 배경이미지
@@ -31,6 +32,11 @@ class panel10 extends JPanel {
     private boolean loggedIn[]; // 로그인 했는지 체크
     private JTextField id_field;
     private JTextField password_field;
+    private JTextField txtCheckYourPassword;
+
+    String pwd = null;      //로그인시 아이디와 비교하기 위해서 필요
+    String pwd1 = null;    //비밀번호 확인과 대조하기 위해서 필요
+    String pwd2 = null;    //비밀번호 확인과 대조하기 위해서 필요
 
     public panel10(boolean loggedIn[]) {
         this.loggedIn = loggedIn;
@@ -77,10 +83,7 @@ class panel10 extends JPanel {
         this.add(lblIn);
 
         JButton signUp_button = new JButton("Sign Up");
-        signUp_button.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-            }
-        });
+
         signUp_button.setOpaque(false);
         signUp_button.setForeground(Color.WHITE);
         signUp_button.setFont(new Font("SansSerif", Font.BOLD, 15));
@@ -88,6 +91,52 @@ class panel10 extends JPanel {
         signUp_button.setBorderPainted(false);
         signUp_button.setBounds(68, 352, 92, 25);
         this.add(signUp_button);
+
+        id_field.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Main.nickName = id_field.getText();
+                id_field.setText("check");
+            }
+        });
+
+        password_field.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String msg = password_field.getText();
+                client.sendPwd(msg);
+                password_field.setText("check");
+            }
+        });
+
+        login_button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("login button");
+                if (pwd != null) {
+                    System.out.print(pwd);
+                    if (pwd.equals("check")) {      //DB에서 대조 결과 check 출력해줌
+                        removeAll();
+                        image = new ImageIcon("src\\GUI_ver2\\image\\login_background_success.jpg").getImage();
+                        JPanel background = new JPanel() {
+                            public void paintComponent(Graphics g) {
+                                Dimension d = getSize();
+                                g.drawImage(image, 0, 0, d.width, d.height, null);
+                                setOpaque(false); // 그림 투명도
+                                super.paintComponent(g);
+                            }
+                        };
+                        background.setBounds(0, 0, 450, 530);
+                        add(background);
+                        revalidate();
+                        repaint();
+                        loggedIn[0] = true;
+                    } else    //아이디에 일치하는 비밀번호가 없을 때
+                        System.out.println("password 틀림\n");
+                }
+            }
+        });
+
         signUp_button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -114,6 +163,8 @@ class panel10 extends JPanel {
         };
         background.setBounds(0,0,450, 530);
         this.add(background);
+
+        client.setLgui(this);
     }
 
     public void setSignUp() {
@@ -123,21 +174,27 @@ class panel10 extends JPanel {
         JButton signUp_button = new JButton("Sign Up");
         signUp_button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                removeAll();
-                image = new ImageIcon("src\\GUI_ver2\\image\\login_background_success.jpg").getImage();
-                JPanel background = new JPanel() {
-                    public void paintComponent(Graphics g) {
-                        Dimension d = getSize();
-                        g.drawImage(image, 0, 0, d.width, d.height, null);
-                        setOpaque(false); // 그림 투명도
-                        super.paintComponent(g);
+                if(pwd1 != null && pwd2 != null){
+                    if(pwd1.equals(pwd2)) {
+                        removeAll();
+                        image = new ImageIcon("src\\GUI_ver2\\image\\login_background_success.jpg").getImage();
+                        JPanel background = new JPanel() {
+                            public void paintComponent(Graphics g) {
+                                Dimension d = getSize();
+                                g.drawImage(image, 0, 0, d.width, d.height, null);
+                                setOpaque(false); // 그림 투명도
+                                super.paintComponent(g);
+                            }
+                        };
+                        background.setBounds(0,0,450, 530);
+                        add(background);
+                        revalidate();
+                        repaint();
+                        loggedIn[0] = true;
                     }
-                };
-                background.setBounds(0,0,450, 530);
-                add(background);
-                revalidate();
-                repaint();
-                loggedIn[0] = true;
+                    else
+                        System.out.println("password check 다름");
+                }
             }
         });
         signUp_button.setOpaque(false);
@@ -179,7 +236,7 @@ class panel10 extends JPanel {
         lblIn.setBounds(92, 158, 68, 87);
         this.add(lblIn);
 
-        JTextField txtCheckYourPassword = new JTextField();
+        txtCheckYourPassword = new JTextField();
         txtCheckYourPassword.setText("Check your password");
         txtCheckYourPassword.setColumns(10);
         txtCheckYourPassword.setBounds(91, 317, 241, 21);
@@ -211,10 +268,52 @@ class panel10 extends JPanel {
         signUpTitle.setLocation(20, 80);
         this.add(signUpTitle);
 
+        id_field.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Main.nickName = id_field.getText();
+                id_field.setText("check");
+            }
+        });
+
+        password_field.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String msg = password_field.getText();
+                client.sendPwd1(msg);
+                password_field.setText("check");
+            }
+        });
+
+        txtCheckYourPassword.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String msg = txtCheckYourPassword.getText();
+                client.sendPwd2(msg);
+                txtCheckYourPassword.setText("check");
+            }
+        });
 
         this.setVisible(true);
     }
+
+    public void appendPwd(String msg) {
+        String[] token = msg.split("#");
+        this.pwd = token[1];
+    }
+
+    public void appendPwd1(String msg) {
+        String[] token = msg.split("#");
+        this.pwd1 = token[1];
+    }
+
+    public void appendPwd2(String msg) {
+        String[] token = msg.split("#");
+        this.pwd2 = token[1];
+    }
 }
+
+
 
 public class Login_gui extends JPanel
 {

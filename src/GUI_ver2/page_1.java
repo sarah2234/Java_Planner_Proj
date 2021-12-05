@@ -164,7 +164,7 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
         });
 
         // 배경화면 생성
-        image = new ImageIcon("C:\\Users\\RC\\IdeaProjects\\javafirst\\src\\GUI_ver1\\image\\background.jpeg").getImage();
+        image = new ImageIcon("src\\GUI_ver2\\image\\background.jpeg").getImage();
         JPanel background = new JPanel() {
             public void paintComponent(Graphics g) {
                 Dimension d = getSize();
@@ -333,7 +333,7 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
             });
 
 
-            Image btn_image = new ImageIcon("C:\\Users\\RC\\IdeaProjects\\javafirst\\src\\GUI_ver1\\image\\예시3.png").getImage();
+            Image btn_image = new ImageIcon("src\\GUI_ver2\\image\\예시3.png").getImage();
             Image into_btn_image = btn_image.getScaledInstance(76,31,Image.SCALE_SMOOTH);
             ImageIcon real_btn_image = new ImageIcon(into_btn_image);
 
@@ -393,7 +393,7 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
 
             this.add(createButton);
 
-            image = new ImageIcon("C:\\Users\\RC\\IdeaProjects\\javafirst\\src\\GUI_ver1\\image\\rectangle.png").getImage();
+            image = new ImageIcon("src\\GUI_ver2\\image\\rectangle.png").getImage();
             JPanel background = new JPanel() {
                 public void paintComponent(Graphics g) {
                     Dimension d = getSize();

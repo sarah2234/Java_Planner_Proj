@@ -110,13 +110,20 @@ class panel7 extends JPanel{     // 7 페이지 panel 생성
 
 
         Period_txt.setColumns(10);
-        Period_txt.setBounds(140, 156, 250, 20);
+        Period_txt.setBounds(140, 156, 100, 20);
         panel.add(Period_txt);
 
+        JLabel period_unit = new JLabel("주");
+        period_unit.setBounds(245,156, 20,20);
+        panel.add(period_unit);
 
         Time_txt.setColumns(10);
-        Time_txt.setBounds(140, 222, 250, 20);
+        Time_txt.setBounds(140, 222, 100, 20);
         panel.add(Time_txt);
+
+        JLabel Time_unit = new JLabel("시간");
+        Time_unit.setBounds(245,222, 40,20);
+        panel.add(Time_unit);
 
         how_to.setBounds(140,296,65,20);
         panel.add(how_to);

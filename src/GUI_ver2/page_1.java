@@ -9,7 +9,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
+import static GUI_ver2.Main.client;
 
 class panel1 extends JPanel{   // 1 페이지 panel 생성
     private Vector<Point> v_M = new Vector<Point>();
@@ -96,14 +99,14 @@ class panel1 extends JPanel{   // 1 페이지 panel 생성
 
 class panel2 extends JPanel{    // 2 페이지 panel 생성
     private TrayIconHandler trayIcon[];
-    private JLabel plans[] = new JLabel[7];
+    private JLabel plans[] = new JLabel[7];     //일일 계획
     private JButton checklist[] = new JButton[7]; // 일정 완성했는지에 대한 여부
     private boolean done[] = new boolean[7]; // 일정 완성했는지에 대한 여부
     private boolean usingCrawler[] = new boolean[7]; // 각 일정이 웹크롤링을 사용하는지에 대한 여부
     private String urls[] = new String[7]; // url 받아오기
     private int planCnt = 0; // 일정 개수
-    private Image image;
-    private Vector<Timer> timers;
+    private Image image;        //?
+    private Vector<Timer> timers;       //?
     private boolean stop = false; // 일정 멈춤
 
     private String startHour; // 타이머 시작하는 시간
@@ -111,17 +114,19 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
 
     private Vector<String> Time_H = new Vector<String>();
     private Vector<String> Time_M = new Vector<String>();
-    int index_S_H;
-    int index_S_M;
-    int index_E_H;
-    int index_E_M;
+    int index_S_H;      //Start Hour
+    int index_S_M;      //Start Minute
+    int index_E_H;      //End Hour
+    int index_E_M;      //End Minute
+
+    private String schedule;     //서버로부터 받은 내용 저장
 
     public panel2(TrayIconHandler trayIcon[]){
         this.setLayout(null);
 
         timers = new Vector<>();
 
-        for(int i = 0; i < 7; i++) {
+        for(int i = 0; i < 7; i++) {        //각각 일정당 여부들 초기화
             plans[i] = new JLabel();
             done[i] = false;
             usingCrawler[i] = false;
@@ -130,6 +135,8 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
 
         this.trayIcon = trayIcon;
         drawPanel();
+
+        client.setSgui(this);
     }
 
     private void drawPanel() {
@@ -151,7 +158,7 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
                 ImageIcon check = new ImageIcon("src\\GUI_ver2\\image\\check.png");
                 Image check_img = check.getImage();
                 check_img = check_img.getScaledInstance(14, 14, Image.SCALE_SMOOTH);
-                ImageIcon check_icon = new ImageIcon(check_img);
+                ImageIcon check_icon = new ImageIcon(check_img);    //조절한 check image 넣기
                 checklist[i] = new JButton(check_icon);
                 if(planCnt > i ) { // 계획 개수만큼 허용
                     checklist[i].setVisible(true);
@@ -454,17 +461,17 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
                 }
             });
 
-            HowTo_combo.addActionListener(new ActionListener() {
+            HowTo_combo.addActionListener(new ActionListener() {    //측정방법
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     JComboBox cb = (JComboBox) e.getSource();
                     int index = cb.getSelectedIndex();
                     switch (index){
-                        case 0:
+                        case 0:     //타이머
                             URL.setVisible(false);
                             break;
-                        case 1:
-                        case 2:
+                        case 1:     //블로그
+                        case 2:     //Github
                             URL.setVisible(true);
                             break;
                     }
@@ -483,6 +490,16 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     if(index_S_H<=index_E_H){
+                        LocalDate now = LocalDate.now();        //서버에 오늘 날짜도 보내줘야함
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+                        String Now = now.format(formatter);
+
+                        String msg = Now + "%" + getGoal() + "%" + Time_H_S.getSelectedIndex() + ":" + Time_M_S.getSelectedIndex() + "~" +  //%토큰으로 나눔
+                                Time_H_E.getSelectedIndex() + ":" + Time_M_E.getSelectedIndex() + "%" + getComment() + "%" +
+                                HowTo_combo.getSelectedItem().toString() + "%" + getURL();
+
+                        client.sendSchedule(msg);
+
                         plans[planCnt].setText("* [" + Time_H_S.getSelectedIndex() + ":" + Time_M_S.getSelectedIndex() + " ~ " +
                                 Time_H_E.getSelectedIndex() + ":" + Time_M_E.getSelectedIndex() + "] " +
                                 getGoal() + " - " + getComment());
@@ -588,6 +605,10 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
                 usingCrawler[planCnt] = true;
             }
         }
+    }
+    public void appendSchedule1(String msg) {
+        String[] token = msg.split("#");
+        this.schedule = token[1];
     }
 }
 

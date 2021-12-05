@@ -1,6 +1,8 @@
 package GUI_ver2;
 
 //import GUI_ver2.clientBackground;
+import Features.TrayIconHandler;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,6 +18,7 @@ public class Main extends JFrame {
     protected JPanel login_gui = new Login_gui(loggedIn);
     static clientBackground  client = new clientBackground();
     static String nickName=null;
+    static TrayIconHandler trayIcon = new TrayIconHandler();
     //setGui
     //connet
     //sendMessage
@@ -24,7 +27,7 @@ public class Main extends JFrame {
 
     public Main(){
         c.setLayout(null);
-        loggedIn[0] = false;
+        loggedIn[0] = true;
 
         // setBounds에서 width: 900으로 하면 오른쪽 패널의 오른쪽 경계선이 보이지 않음
         page_1.setLayout(new GridLayout());
@@ -203,5 +206,6 @@ public class Main extends JFrame {
 
     public static void main(String[] args) {
         new Main();
+        TrayIconHandler trayIcon = new TrayIconHandler();
     }
 }

@@ -243,8 +243,12 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
             timeTextField.setBorder(BorderFactory.createEmptyBorder(2 , 5 , 2 , 5));
             this.add(timeTextField);
 
+            Image btn_image = new ImageIcon("src\\GUI_ver2\\image\\예시3.png").getImage();
+            Image into_btn_image = btn_image.getScaledInstance(76,31,Image.SCALE_SMOOTH);
+            ImageIcon real_btn_image = new ImageIcon(into_btn_image);
+
             // 버튼에 마우스 대면 배경이 날아가는 오류!!
-            createButton = new JButton("생성");
+            createButton = new JButton(real_btn_image);
             createButton.setForeground(Color.WHITE);
             createButton.setFont(new Font("맑은 고딕", Font.PLAIN, 16));
             createButton.setOpaque(false);

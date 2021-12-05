@@ -1,23 +1,16 @@
 package Features;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.time.LocalDateTime;
 
 public class Timer  extends  Thread {
+    private String startTime; // 타이머 작동 시작 시간
     private long timerSec; // 걸리는 시간을 초 단위로 저장
     private boolean stop; // 일시정지 여부
     private boolean finished; // 완료 여부
 
-    public Timer(String startTime, String endTime) { // 시작 시각, 끝나는 시각 입력
-        long startHour = Integer.parseInt(startTime.substring(0, startTime.indexOf(":"))); // 시작 시각의 시 저장
-        long startMinute = Integer.parseInt(startTime.substring(startTime.indexOf(":") + 1)); // 시작 시각의 분 저장
-
-        int endHour = Integer.parseInt(endTime.substring(0, endTime.indexOf(":"))); // 끝나는 시각의 시 저장
-        int endMinute = Integer.parseInt(endTime.substring(endTime.indexOf(":") + 1)); // 끝나는 시각의 분 저장
-
-        timerSec = ((endHour - startHour) * 60 + (endMinute - startMinute)) * 60; // 걸리는 시간을 초 단위로 저장
+    public Timer(String startTime, long timerSec) { // 시작 시각, 타이머 사용할 시간(?) 입력
+        this.startTime = startTime;
+        this.timerSec = timerSec;
         stop = false;
         finished = false;
     }
@@ -43,19 +36,28 @@ public class Timer  extends  Thread {
     } // 타이머가 종료되어 있는지에 대해 반환
 
     public void run() {
+        long startHour = Integer.parseInt(startTime.substring(0, startTime.indexOf(":"))); // 시작 시각의 시 저장
+        long startMinute = Integer.parseInt(startTime.substring(startTime.indexOf(":") + 1)); // 시작 시각의 분 저장
+
+        LocalDateTime current;
+
         while(!finished) {// 타이머 끝나기 전까지 루프
-            try {
-                Thread.sleep(1000);
-                if (!stop) { // 타이머가 멈춘 상태가 아니라면 남은 시간에서 1초를 빼기
-                    timerSec -= 1;
-                    System.out.println("Resume : " + timerSec); // 확인용 메세지
-                    if (timerSec <= 0) {
-                        finished = true; // 시간을 모두 소모하면 타이머 종료
-                        System.out.println("Finished."); // 확인용 메세지
+            current = LocalDateTime.now();
+            // 현재 시작 시간임
+            if (current.getHour() >= startHour && current.getMinute() >= startMinute) {
+                try {
+                    Thread.sleep(1000);
+                    if (!stop) { // 타이머가 멈춘 상태가 아니라면 남은 시간에서 1초를 빼기
+                        timerSec -= 1;
+                        System.out.println("Resume : " + timerSec); // 확인용 메세지
+                        if (timerSec <= 0) {
+                            finished = true; // 시간을 모두 소모하면 타이머 종료
+                            System.out.println("Finished."); // 확인용 메세지
+                        }
                     }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
             }
         }
     }

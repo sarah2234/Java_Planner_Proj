@@ -99,24 +99,33 @@ public class serverBackground {
                     msg = in.readUTF();
                     System.out.println(msg);
                     String[] token = msg.split("#") ;
-                    if("sch".equals(token[0])) {
+                    if("sch".equals(token[0])) {            //일일 스케쥴 생성
                         String[] Token = token[1].split("%");   //DB에 넣어주세요, Token[0]부터 넣으시면 됩니다.
                         sendOne(nick, "sch#" + token[1]);       //날짜%목표%시간%코멘트%측정방법%주소 순서로 저장되어 있습니다.
                         gui.appendMsg(msg);
                     }
-                    else if("pwd".equals(token[0])) {         //아이디는 nick, 비밀번호는 pwd -> DB에서 비교 후 맞으면 check 뿌리기
+                    else if("pwd".equals(token[0])) {         //로그인 / 아이디는 nick, 비밀번호는 pwd -> DB에서 비교 후 맞으면 check 뿌리기
                         sendOne(nick, "pwd#" + "check");     //사용자로부터 받은 내용을 사용자에게 뿌림, 단 문자열에 # 포함되면 안됨
                         gui.appendMsg(msg);              //사용자로부터 받은 내용을 서버 gui에 뿌림
+                        //DB에서 정보 뽑기 :)
+                        //sendOne(nick, "sch#" + DB정보);      //사용자와 연결된 모든 schedule 정보을 Calendar에 준다.(구현), 이중배열 이용하기.
+                        //sendOne(nick, "Tsch" + DB정보);      //사용자와 연결된 schedule 정보를 일일 스케쥴에(panel2) 준다.(미구현)
+                        //sendOne(nick, "Sroad" + DB정보);     //현재 저장된 모든 RoadMap 정보를 3장 오른쪽에 준다.(미구현)
+                        //sendOne(nick, "Myroad" + DB정보);    //사용자와 연결된 RoadMap 정보를 2장 오른쪽에 준다.(미구현)
                     }
                     else if("pwd1".equals(token[0])) {      //아이디는 nick, 비밀번호는 pwd1 -> DB에 저장하기
                         System.out.println("checkServer");
                         sendOne(nick, "pwd1#" + token[1]);
                         gui.appendMsg(msg);
                     }
-                    else if("pwd2".equals(token[0])) {   //한명에게 보냄
+                    else if("pwd2".equals(token[0])) {   //회원가입 완료, 로그인과 같은 작용 ㅇㅇ
                         System.out.println("checkServer");
                         sendOne(nick, "pwd2#" + token[1]);
                         gui.appendMsg(msg);
+                        //sendOne(nick, "sch#");      //사용자와 연결된 모든 schedule 정보을 Calendar에 준다.(구현), 이중배열 이용하기.
+                        //sendOne(nick, "Tsch");      //사용자와 연결된 schedule 정보를 일일 스케쥴에(panel2) 준다.(미구현)
+                        //sendOne(nick, "Sroad");     //현재 저장된 모든 RoadMap 정보를 3장 오른쪽에 준다.
+                        //sendOne(nick, "Myroad");    //사용자와 연결된 RoadMap 정보를 2장 오른쪽에 준다.
                     }
                 }
             } catch (IOException e) {

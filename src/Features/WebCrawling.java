@@ -4,8 +4,6 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.*;
-
-import java.time.Duration;
 import java.time.*;
 import java.util.*;
 
@@ -17,6 +15,7 @@ public class WebCrawling {
     private String url; // 깃허브 레포지토리 또는 네이버 블로그 주소
     private String category; // 네이버 블로그 사용시 카테고리 입력
     private int cntPost; // 커밋 또는 게시물 올린 횟수
+    private boolean posted; // 오늘 게시물을 올렸는지 확인
 
     // 드라이버 설치 경로
     public static String WEB_DRIVER_ID = "webdriver.chrome.driver";
@@ -47,7 +46,9 @@ public class WebCrawling {
     }
 
     // 해당 메소드만으로 오늘 공부했는지 확인
-    public int checkPost() {
+    public void checkPost() {
+        posted = false;
+
         if(url.contains("github")) { // 깃허브 레포지토리 주소 입력 시
             countCommits();
         }
@@ -57,7 +58,11 @@ public class WebCrawling {
         else { // 잘못된 주소
             System.out.println("Invalid webpage.");
         }
-        return cntPost; // 현재까지 게시물 올린 횟수 리턴 (또는 커밋한 횟수 리턴. 이때 커밋한 횟수는 하루에 최대 1번으로 카운트)
+        // 현재까지 게시물 올린 횟수 변경 (또는 커밋한 횟수 리턴. 이때 커밋한 횟수는 하루에 최대 1번으로 카운트)
+    }
+
+    public boolean isPosted() {
+        return posted;
     }
 
     // GitHub 사용 시 커밋 카운트
@@ -83,6 +88,7 @@ public class WebCrawling {
             if(year_i == today.getYear() && month_i == today.getMonthValue() && day_i == today.getDayOfMonth()) { // 오늘 날짜와 'relative-time'의 날짜가 일치
                 cntPost++; // 게시물 올린 횟수 증가
                 System.out.println(cntPost); // 확인용 메세지
+                posted = true; // 확인됨!
             }
             else { // 오늘 날짜와 'relative-time'의 날짜가 불일치
                 System.out.println("Cannot find today's commits."); // 확인용 메세지
@@ -135,6 +141,7 @@ public class WebCrawling {
             else { // 오늘 쓴 게시물에 해당
                 cntPost++;
                 System.out.println("Successfully found today's post."); // 확인용 메세지
+                posted = true; // 확인됨!
             }
         } catch (Exception e) { // 해당 블로그의 주소가 유효하지 않음
             System.out.println("The blog doesn't exist."); // 확인용 메세지
@@ -155,7 +162,7 @@ public class WebCrawling {
     }
 
 //    public static void main(String[] args) {
-//        Features.WebCrawling bot1 = new Features.WebCrawling();
+//        Features.WebCrawling bot1 = new Features.WebCrawling("https://blog.naver.com/bsol0210/222586805802");
 //        bot1.checkPost();
 //    }
 }

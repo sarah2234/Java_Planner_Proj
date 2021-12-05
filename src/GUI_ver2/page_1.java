@@ -99,6 +99,8 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
     private JLabel plans[] = new JLabel[7];
     private JButton checklist[] = new JButton[7]; // 일정 완성했는지에 대한 여부
     private boolean done[] = new boolean[7]; // 일정 완성했는지에 대한 여부
+    private boolean usingCrawler[] = new boolean[7]; // 각 일정이 웹크롤링을 사용하는지에 대한 여부
+    private String urls[] = new String[7]; // url 받아오기
     private int planCnt = 0; // 일정 개수
     private Image image;
     private Vector<Timer> timers;
@@ -121,12 +123,12 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
 
         for(int i = 0; i < 7; i++) {
             plans[i] = new JLabel();
-
             done[i] = false;
+            usingCrawler[i] = false;
+            urls[i] = "";
         }
 
         this.trayIcon = trayIcon;
-
         drawPanel();
     }
 
@@ -182,11 +184,24 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
                 checklist[i].addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        done[finalI] = !done[finalI]; // toggle => 일정 완료로 표시
-                        removeAll();
-                        drawPanel();
-                        revalidate();
-                        repaint();
+                        if(timers.get(finalI).isFinished()) {
+                            if(usingCrawler[finalI]) { // 웹크롤링을 사용해야 함
+                                WebCrawling webCrawling = new WebCrawling(urls[finalI]); // 해당 주소로 웹크롤링
+                                webCrawling.checkPost();
+                                if(webCrawling.isPosted()) {
+                                    trayIcon[0].displayMessage("Stardust", "확인되었습니다!", TrayIcon.MessageType.INFO);
+                                }
+                                else {
+                                    trayIcon[0].displayMessage("Stardust", "확인할 수 없습니다.", TrayIcon.MessageType.ERROR);
+                                    return;
+                                }
+                            }
+                            done[finalI] = !done[finalI]; // toggle => 일정 완료로 표시
+                            removeAll();
+                            drawPanel();
+                            revalidate();
+                            repaint();
+                        }
                     }
                 });
             }
@@ -456,11 +471,6 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
                 }
             });
 
-//            Image btn_image = new ImageIcon("src\\GUI_ver2\\image\\예시3.png").getImage();
-//            Image into_btn_image = btn_image.getScaledInstance(76,31,Image.SCALE_SMOOTH);
-//            ImageIcon real_btn_image = new ImageIcon(into_btn_image);
-
-
             createButton = new JButton("생성");
             createButton.setForeground(Color.WHITE);
             createButton.setFont(new Font("맑은 고딕", Font.PLAIN, 16));
@@ -472,14 +482,16 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
             createButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    if(index_S_H<index_E_H){
-                        plans[planCnt].setText("* [" + getGoal() + "] " + getComment() + ", " +
-                                Time_H_S.getSelectedIndex() + ":" + Time_M_S.getSelectedIndex() + " ~ " +
-                                Time_H_E.getSelectedIndex() + ":" + Time_M_E.getSelectedIndex());
-                        plans[planCnt].setFont(new Font("맑은 고딕", Font.PLAIN, 12));
+                    if(index_S_H<=index_E_H){
+                        plans[planCnt].setText("* [" + Time_H_S.getSelectedIndex() + ":" + Time_M_S.getSelectedIndex() + " ~ " +
+                                Time_H_E.getSelectedIndex() + ":" + Time_M_E.getSelectedIndex() + "] " +
+                                getGoal() + " - " + getComment());
+                        plans[planCnt].setFont(new Font("맑은 고딕", Font.PLAIN, 14));
 
                         checklist[planCnt].setVisible(true); // 체크 박스 표시
                         checklist[planCnt].setEnabled(true);
+
+                        urls[planCnt] = URL.getText();
 
                         for(JLabel plan_ : plans) {
                             plan_.setVisible(true);
@@ -493,30 +505,6 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
                         revalidate();
                         repaint();
                         planCnt++;
-                    }
-                    else if (index_S_H==index_E_H){
-                        if(index_S_M<=index_E_M){
-                            plans[planCnt].setText("* [" + getGoal() + "] " + getComment() + ", " +
-                                    Time_H_S.getSelectedIndex() + ":" + Time_M_S.getSelectedIndex() + " ~ " +
-                                    Time_H_E.getSelectedIndex() + ":" + Time_M_E.getSelectedIndex());
-                            plans[planCnt].setFont(new Font("맑은 고딕", Font.PLAIN, 12));
-
-                            checklist[planCnt].setVisible(true); // 체크 박스 표시
-                            checklist[planCnt].setEnabled(true);
-
-                            for(JLabel plan_ : plans) {
-                                plan_.setVisible(true);
-                            }
-
-                            addFeatures();
-
-                            setVisible(false);
-                            removeAll();
-                            drawPanel();
-                            revalidate();
-                            repaint();
-                            planCnt++;
-                        }
                     }
                     else{
                         JOptionPane none = new JOptionPane();
@@ -557,31 +545,22 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
             return goal_txt.getText();
         }
 
-        public String getAddress() {
+        public String getURL() {
             return URL.getText();
         }
 
         private void addFeatures() {
             /*
-             웹크롤링 추가
-            */
-            if(HowTo_combo.getSelectedIndex() != 0) {
-                WebCrawling webCrawling = new WebCrawling(getAddress()); // 해당 주소로 웹크롤링
-            }
-
-            /*
              타이머 추가
              */
-            else {
-                String startTime = Time_H_S.getSelectedIndex() + ":" + Time_M_S.getSelectedIndex();
-                String endTime = Time_H_E.getSelectedIndex() + ":" + Time_M_E.getSelectedIndex();
-                long timerSec = ((Time_H_E.getSelectedIndex() - Time_H_S.getSelectedIndex()) * 60 +
-                        (Time_M_E.getSelectedIndex() - Time_M_S.getSelectedIndex())) * 60; // 걸리는 시간을 초 단위로 저장
+            String startTime = Time_H_S.getSelectedIndex() + ":" + Time_M_S.getSelectedIndex();
+            String endTime = Time_H_E.getSelectedIndex() + ":" + Time_M_E.getSelectedIndex();
+            long timerSec = ((Time_H_E.getSelectedIndex() - Time_H_S.getSelectedIndex()) * 60 +
+                    (Time_M_E.getSelectedIndex() - Time_M_S.getSelectedIndex())) * 60; // 걸리는 시간을 초 단위로 저장
 
-                Timer timer = new Timer(startTime, timerSec);
-                timer.start();
-                timers.add(timer);
-            }
+            Timer timer = new Timer(startTime, timerSec);
+            timer.start();
+            timers.add(timer);
 
             /*
             tray alert 추가
@@ -599,6 +578,13 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
                 trayIcon[0].addAlert(getGoal(), getComment(),
                         currentTime.getYear(), currentTime.getMonthValue(), currentTime.getDayOfMonth() + 1,
                         Time_H_S.getSelectedIndex(), Time_M_S.getSelectedIndex(), TrayIcon.MessageType.NONE);
+            }
+
+            /*
+             웹크롤링 추가
+            */
+            if(HowTo_combo.getSelectedIndex() != 0) {
+                usingCrawler[planCnt] = true;
             }
         }
     }

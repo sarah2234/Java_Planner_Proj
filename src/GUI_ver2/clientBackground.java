@@ -13,6 +13,8 @@ public class clientBackground {
     private DataOutputStream out;
     private Main Mgui;      //사용자 Gui
     private panel10 Lgui;
+    private Calendar_gui Cgui;      //Calendar
+    private panel2 Sgui;            //panel2
     private String msg;         //보낼 문자열 메세지
     private String nickName=null;    //사용자 이름(아이디 비번 받을 때 사용하면 좋을듯?), 맵 받을 때 엮버려도 되려나?
 
@@ -24,10 +26,18 @@ public class clientBackground {
         this.Lgui = Lgui;
     }
 
+    public final void setCgui(Calendar_gui Cgui) {    //panel2
+        this.Cgui = Cgui;
+    }
+
+    public final void setSgui(panel2 Sgui) {    //panel2
+        this.Sgui = Sgui;
+    }
+
     public void connet() {      //server와 연결
         try {
             //socket host값은 자신의 컴퓨터 주소로 바꿔야 한다.
-            socket = new Socket("192.168.217.1", 7777);  //180.64.51.37은 현재 serverPC의 공인 ip주소 값
+            socket = new Socket("180.64.51.37", 7777);  //180.64.51.37은 현재 serverPC의 공인 ip주소 값
             System.out.println("서버 연결됨.");
 
             out = new DataOutputStream(socket.getOutputStream());   //서버에게 줄 값
@@ -39,7 +49,11 @@ public class clientBackground {
             while (in != null) {
                 msg = in.readUTF(); //서버에게 받은 값을
                 String[] token = msg.split("#");
-                if("pwd".equals(token[0])) {
+                if("sch".equals(token[0])){
+                    System.out.println(msg);
+                    Cgui.appendSchedule2(msg);      //panel2 -> Calendar / -> Calendar
+                }
+                else if("pwd".equals(token[0])) {
                     System.out.println(msg);
                     Lgui.appendPwd(msg);
                 }
@@ -89,6 +103,14 @@ public class clientBackground {
     public void sendPwd2(String pwd2) {
         try {
             out.writeUTF("pwd2#" + pwd2);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void sendSchedule(String schedule) {
+        try {
+            out.writeUTF("sch#" + schedule);
         } catch (IOException e) {
             e.printStackTrace();
         }

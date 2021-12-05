@@ -4,8 +4,10 @@ import java.awt.event.*;
 import java.util.Calendar;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
+import static GUI_ver2.Main.client;
 
 public class Calendar_gui extends JPanel implements ItemListener, ActionListener{
+    String schedule;
     Font fnt = new Font("굴림체", Font.BOLD, 20);
 
     //상단
@@ -72,6 +74,8 @@ public class Calendar_gui extends JPanel implements ItemListener, ActionListener
         //JFrame의 설정들
         setVisible(true);
         this.setBorder(new LineBorder(Color.RED,3));
+
+        client.setCgui(this);
     }
     //날짜셋팅
     public void setDay() {
@@ -182,6 +186,10 @@ public class Calendar_gui extends JPanel implements ItemListener, ActionListener
         }else{ //그외의 경우
             month++;
         }
+    }
+    public void appendSchedule2(String msg) {
+        String[] token = msg.split("#");
+        this.schedule = token[1];
     }
 }
 

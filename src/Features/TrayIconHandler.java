@@ -19,9 +19,44 @@ Tooltip : 트레이 아이콘에 마우스를 올렸을 시 나타나는 설명(
 */
 
 public class TrayIconHandler {
-    private static TrayIcon trayIcon;
-    private final static Logger LOG = Logger.getGlobal(); // get global logger object with the name Logger.
-    private static ArrayList<Thread> alerts = new ArrayList<>(); // 알람 목록
+    private TrayIcon trayIcon;
+    private final Logger LOG = Logger.getGlobal(); // get global logger object with the name Logger.
+    private ArrayList<Thread> alerts = new ArrayList<>(); // 알람 목록
+
+    public TrayIconHandler() {
+        registerTrayIcon(
+                Toolkit.getDefaultToolkit().getImage("image/status-busy.png"), // 트레이 아이콘 이미지 설정
+                "Example", // 툴팁(설명) 설정
+                new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) { // 더블 클릭
+                        // opening your application
+                        System.exit(0); // 종료
+                    }
+                }
+        );
+
+        // 종료하는 메뉴 생성
+        addMenuItem("Exit", new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) { // 마우스 우클릭
+                System.exit(0);
+            }
+        });
+
+        // 알람을 추가하는 메뉴 생성
+        addMenuItem("Add new alert", new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Added new alert."); // 확인용 메세지
+                Thread alert = new Thread(new SystemTrayAlert());
+                alert.start(); // 알람 병행실행
+                alerts.add(alert);
+            }
+        });
+
+        //Features.TrayIconHandler.displayMessage("Opensource Project", "This is detail.", TrayIcon.MessageType.NONE);
+    }
 
     /*
     registerTrayIcon : 트레이 아이콘 등록 함수
@@ -29,7 +64,7 @@ public class TrayIconHandler {
     toolTip : 아이콘에 마우스를 올렸을 때 보여질 메세지.
     action : 아이콘을 더블 클릭했을 때 실행 할 행동을 정의한 ActionListener.
     */
-    private static void registerTrayIcon(Image image, String tooltip, ActionListener action) {
+    private void registerTrayIcon(Image image, String tooltip, ActionListener action) {
         if (SystemTray.isSupported()) {
             if(trayIcon != null) trayIcon = null;
             trayIcon = new TrayIcon(image);
@@ -53,7 +88,7 @@ public class TrayIconHandler {
     /*
     getPopupMenu : 더블 클릭 시 메뉴 팝업 처리 함수
     */
-    private static PopupMenu getPopupMenu() {
+    private PopupMenu getPopupMenu() {
         PopupMenu popupMenu = trayIcon.getPopupMenu(); // returns the popup menu associated with this TrayIcon
 
         if(popupMenu == null) {
@@ -66,14 +101,14 @@ public class TrayIconHandler {
     /*
     isRegistered : 트레이 아이콘과 팝업 메뉴 등록 여부 반환 함수
     */
-    public static boolean isRegistered() {
+    public boolean isRegistered() {
         return (trayIcon != null && getPopupMenu() != null);
     }
 
     /*
     addMenuItem : 메뉴 아이템 추가하여 팝업 메뉴 수정하는 함수
     */
-    public static void addMenuItem(String label, ActionListener action) {
+    public void addMenuItem(String label, ActionListener action) {
         if(!isRegistered()) return;
         MenuItem menuItem = new MenuItem(label);
         PopupMenu popupMenu = getPopupMenu(); // 메뉴 불러오기
@@ -85,10 +120,63 @@ public class TrayIconHandler {
     /*
     displayMessage : 알람 메세지 표시
      */
-    public static void displayMessage(String title, String detail, TrayIcon.MessageType messageType) {
+    public void displayMessage(String title, String detail, TrayIcon.MessageType messageType) {
         if(!isRegistered()) return;
 
         trayIcon.displayMessage(title, detail, messageType);
+    }
+
+    /*
+    addAlert : 알람 추가
+     */
+    public void addAlert(String title, String detail, int year, int month, int day, int hour, int minute, TrayIcon.MessageType messageType) {
+        if(!isRegistered()) return;
+
+        System.out.println("Added new alert."); // 확인용 메세지
+        Thread alert = new Thread(new SystemTrayAlert(title, detail, year, month, day, hour, minute, messageType));
+        alert.start(); // 알람 병행실행
+        alerts.add(alert);
+    }
+
+    // 시스템 트레이 알람 띄우는 클래스
+    class SystemTrayAlert implements Runnable {
+        private long time; // 입력한 시각과 현재 시각 차이 저장
+        private String title;
+        private String detail;
+        private TrayIcon.MessageType messageType;
+
+        // 입력한 시각과 현재 시각 차이 후에 알람 나타남
+        public SystemTrayAlert(String title, String detail, int year, int month, int day, int hour, int minute, TrayIcon.MessageType messageType) {
+            LocalDateTime currentTime = LocalDateTime.now();
+            LocalDateTime deadlineTime = LocalDateTime.of(year, month, day, hour, minute);
+            Duration duration = Duration.between(currentTime, deadlineTime);
+            time = duration.getSeconds() * 1000;
+
+            this.title = title;
+            this.detail = detail;
+            this.messageType = messageType;
+        }
+
+        // 테스트용: 5초 뒤 알람 나타남
+        public SystemTrayAlert() {
+            time = 5000;
+        }
+
+        @Override
+        public void run() {
+            try {
+                Thread.sleep(time);
+                // 작업 수행
+                work();
+            } catch (InterruptedException e) { // 인터럽트가 발생하여 대기 중이던 상태가 예상보다 빨리 끝남
+                e.printStackTrace();
+            }
+        }
+
+        public void work() {
+            System.out.println("alert"); // 확인용 메세지
+            displayMessage(title, detail, messageType); // 알람 띄우기
+        }
     }
 
     // 사용 방법
@@ -128,38 +216,6 @@ public class TrayIconHandler {
 //    }
 }
 
-// 시스템 트레이 알람 띄우는 클래스
-class SystemTrayAlert implements Runnable {
-    private long time; // 입력한 시각과 현재 시각 차이 저장
 
-    // 입력한 시각과 현재 시각 차이 후에 알람 나타남
-    public SystemTrayAlert(int year, int month, int day, int hour, int minute) {
-        LocalDateTime currentTime = LocalDateTime.now();
-        LocalDateTime deadlineTime = LocalDateTime.of(year, month, day, hour, minute);
-        Duration duration = Duration.between(currentTime, deadlineTime);
-        time = duration.getSeconds() * 1000;
-    }
-
-    // 테스트용: 5초 뒤 알람 나타남
-    public SystemTrayAlert() {
-        time = 5000;
-    }
-
-    @Override
-    public void run() {
-        try {
-            Thread.sleep(time);
-            // 작업 수행
-            work();
-        } catch (InterruptedException e) { // 인터럽트가 발생하여 대기 중이던 상태가 예상보다 빨리 끝남
-            e.printStackTrace();
-        }
-    }
-
-    public void work() {
-        System.out.println("alert"); // 확인용 메세지
-        TrayIconHandler.displayMessage("alert", "1", TrayIcon.MessageType.NONE); // 알람 띄우기
-    }
-}
 
 // 참고 : https://blog.silentsoft.org/archives/6

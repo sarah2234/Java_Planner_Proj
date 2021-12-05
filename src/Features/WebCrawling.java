@@ -22,15 +22,16 @@ public class WebCrawling {
     public static String WEB_DRIVER_ID = "webdriver.chrome.driver";
     public static String WEB_DRIVER_PATH = ".//chromedriver.exe"; // chrome driver 경로 (현재 프로젝트 폴더 안에 있음)
 
-    public WebCrawling () {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("URL(Naver Blog 또는 GitHub) : ");
-        url = scanner.next(); // 페이지 주소 입력
-        if(url.contains("blog.naver")) {
-            System.out.print("Please input the name of your category(if you don't use, press enter) : ");
-            scanner.nextLine(); // 버퍼 비우기
-            category = scanner.nextLine(); // 네이버 블로그면 카테고리 입력 (특수문자 입력 x)
-        }
+    public WebCrawling (String url) {
+//        Scanner scanner = new Scanner(System.in);
+//        System.out.print("URL(Naver Blog 또는 GitHub) : ");
+//        url = scanner.next(); // 페이지 주소 입력
+//        if(url.contains("blog.naver")) {
+//            System.out.print("Please input the name of your category(if you don't use, press enter) : ");
+//            scanner.nextLine(); // 버퍼 비우기
+//            category = scanner.nextLine(); // 네이버 블로그면 카테고리 입력 (특수문자 입력 x)
+//        }
+        this.url = url;
 
         System.setProperty(WEB_DRIVER_ID, WEB_DRIVER_PATH); // chrome driver 경로 설정
         ChromeOptions options = new ChromeOptions();
@@ -42,7 +43,7 @@ public class WebCrawling {
         actions = new Actions(driver); // 스크롤할 때 사용
 
         this.cntPost = 0; // 게시물 또는 커밋 수 초기화
-        scanner.close();
+        //scanner.close();
     }
 
     // 해당 메소드만으로 오늘 공부했는지 확인

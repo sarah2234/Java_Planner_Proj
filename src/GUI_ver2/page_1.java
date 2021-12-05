@@ -1,5 +1,6 @@
 package GUI_ver2;
 
+import Features.WebCrawling;
 import org.openqa.selenium.interactions.Mouse;
 
 import javax.swing.*;
@@ -373,7 +374,9 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
                         for(JLabel plan_ : plans) {
                             plan_.setVisible(true);
                         }
-
+                        if(HowTo_combo.getSelectedIndex() != 0) {
+                            WebCrawling webCrawling = new WebCrawling(getAddress());
+                        }
                         setVisible(false);
                         removeAll();
                         drawPanel();

@@ -1,6 +1,6 @@
 package GUI_ver2;
 
-import Features.WebCrawling;
+import Features.*;
 import org.openqa.selenium.interactions.Mouse;
 
 import javax.swing.*;
@@ -11,12 +11,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Vector;
+import java.time.LocalDateTime;
+import java.util.*;
 
 class panel1 extends JPanel{   // 1 페이지 panel 생성
     private Vector<Point> v_M = new Vector<Point>();
     private Vector<Point> v = new Vector<Point>();
-    int count=0;
+    int count = 0;
+
     public panel1(){
         class panel1_StarLight extends JPanel{ // 별자리 찍는 패널
             panel1_StarLight(){
@@ -96,6 +98,7 @@ class panel1 extends JPanel{   // 1 페이지 panel 생성
 }
 
 class panel2 extends JPanel{    // 2 페이지 panel 생성
+    private TrayIconHandler trayIcon[];
     private JLabel plans[] = new JLabel[7];
     private int cnt = 0;
     private Image image;
@@ -107,7 +110,7 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
     int index_E_H;
     int index_E_M;
 
-    public panel2(){
+    public panel2(TrayIconHandler trayIcon[]){
         this.setLayout(null);
 
         for(int i = 0; i < 7; i++) {
@@ -116,6 +119,7 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
             plans[i].setVisible(true);
             plans[i].setForeground(Color.WHITE);
         }
+        this.trayIcon = trayIcon;
 
         drawPanel();
     }
@@ -375,8 +379,26 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
                             plan_.setVisible(true);
                         }
                         if(HowTo_combo.getSelectedIndex() != 0) {
-                            WebCrawling webCrawling = new WebCrawling(getAddress());
+                            WebCrawling webCrawling = new WebCrawling(getAddress()); // 해당 주소로 웹크롤링
                         }
+                        System.out.println("Added new alert."); // 확인용 메세지
+
+                        /*
+                        tray alert 추가
+                         */
+                        LocalDateTime currentTime = LocalDateTime.now();
+                        if(currentTime.getHour() <= Time_H_S.getSelectedIndex() && currentTime.getMinute() < Time_M_S.getSelectedIndex()) {
+                            trayIcon[0].addAlert(getgoal(), getComment(),
+                                    currentTime.getYear(), currentTime.getMonthValue(), currentTime.getDayOfMonth(),
+                                    Time_H_S.getSelectedIndex(), Time_M_S.getSelectedIndex(),
+                                    TrayIcon.MessageType.NONE);
+                        }
+                        else {
+                            trayIcon[0].addAlert(getgoal(), getComment(),
+                                    currentTime.getYear(), currentTime.getMonthValue(), currentTime.getDayOfMonth() + 1,
+                                    Time_H_S.getSelectedIndex(), Time_M_S.getSelectedIndex(), TrayIcon.MessageType.NONE);
+                        }
+
                         setVisible(false);
                         removeAll();
                         drawPanel();
@@ -438,9 +460,9 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
 
 
 public class page_1 extends JPanel{
-    public page_1(){
+    public page_1(TrayIconHandler trayIcon[]){
         panel1 P_1 = new panel1();
-        panel2 P_2 = new panel2();
+        panel2 P_2 = new panel2(trayIcon);
         JPanel main = new JPanel();
 
         main.setLayout(new GridLayout(1,2));

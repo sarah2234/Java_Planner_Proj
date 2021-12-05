@@ -1,5 +1,7 @@
 package GUI_ver2;
 
+import database.DBConnection;
+
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
@@ -8,13 +10,16 @@ import java.awt.event.ActionListener;
 import java.util.Vector;
 
 class panel7 extends JPanel{     // 7 페이지 panel 생성
+    private DBConnection database;
     //어떤 요일이 true면 그 요일에 로드맵을 하겠다는 의미
     private Boolean[] DayOfWeek_bool = {false,false,false,false,false,false,false};
     private JTextField Goal_txt = new JTextField();
     private JTextField Period_txt = new JTextField();
     private JTextField Time_txt = new JTextField();
     private JTextField HowTo_txt = new JTextField();
-    public panel7(){
+
+    public panel7(DBConnection database){
+        this.database = database;
         String[] measure = {"타이머","블로그","Github"};
         JComboBox<String> how_to = new JComboBox<String>(measure); // 측정방법 콤보박스
 
@@ -256,11 +261,14 @@ class panel7 extends JPanel{     // 7 페이지 panel 생성
 }
 
 class panel8 extends JPanel{     // 8 페이지 panel 생성
+    private DBConnection database;
     private JTextField Search_txt;
     private int roadmap_num=3;
     private Vector<List_RoadMap> V_List = new Vector<List_RoadMap>();   //받아온 로드맵 값을 넣고, 출력하게 하는 벡터
     private int cnt=0;
-    public panel8(){
+
+    public panel8(DBConnection database){
+        this.database = database;
         //배치 시작
         setLayout(null);
 
@@ -395,9 +403,9 @@ class panel8 extends JPanel{     // 8 페이지 panel 생성
 
 
 public class page_4 extends JPanel{
-    public page_4(){
-        panel7 P_7 = new panel7();
-        panel8 P_8 = new panel8();
+    public page_4(DBConnection database){
+        panel7 P_7 = new panel7(database);
+        panel8 P_8 = new panel8(database);
         JPanel main = new JPanel();
 
         main.setLayout(new GridLayout(1,2));

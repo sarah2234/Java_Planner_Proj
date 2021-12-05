@@ -2,6 +2,7 @@ package GUI_ver2;
 
 import Features.*;
 import Features.Timer;
+import database.DBConnection;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -14,9 +15,12 @@ import java.util.*;
 class panel1 extends JPanel{   // 1 페이지 panel 생성
     private Vector<Point> v_M = new Vector<Point>();
     private Vector<Point> v = new Vector<Point>();
+    private DBConnection database;
     int count = 0;
 
-    public panel1(){
+    public panel1(DBConnection database){
+        this.database = database;
+
         class panel1_StarLight extends JPanel{ // 별자리 찍는 패널
             panel1_StarLight(){
                 Point one = new Point(76,196);           // 양자리 별 좌표(선을 그어줄 좌표)
@@ -95,6 +99,7 @@ class panel1 extends JPanel{   // 1 페이지 panel 생성
 }
 
 class panel2 extends JPanel{    // 2 페이지 panel 생성
+    private DBConnection database;
     private TrayIconHandler trayIcon[];
     private JLabel plans[] = new JLabel[7];
     private JButton checklist[] = new JButton[7]; // 일정 완성했는지에 대한 여부
@@ -116,10 +121,10 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
     int index_E_H;
     int index_E_M;
 
-    public panel2(TrayIconHandler trayIcon[]){
+    public panel2(DBConnection database, TrayIconHandler trayIcon[]){
         this.setLayout(null);
-
         timers = new Vector<>();
+        this.database = database;
 
         for(int i = 0; i < 7; i++) {
             plans[i] = new JLabel();
@@ -593,9 +598,9 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
 
 
 public class page_1 extends JPanel{
-    public page_1(TrayIconHandler trayIcon[]){
-        panel1 P_1 = new panel1();
-        panel2 P_2 = new panel2(trayIcon);
+    public page_1(DBConnection database, TrayIconHandler trayIcon[]){
+        panel1 P_1 = new panel1(database);
+        panel2 P_2 = new panel2(database, trayIcon);
         JPanel main = new JPanel();
 
         main.setLayout(new GridLayout(1,2));

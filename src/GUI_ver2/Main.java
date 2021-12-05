@@ -2,6 +2,7 @@ package GUI_ver2;
 
 //import GUI_ver2.clientBackground;
 import Features.TrayIconHandler;
+import database.DBConnection;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -19,6 +20,7 @@ public class Main extends JFrame {
     protected JPanel login_gui = new Login_gui(loggedIn);
     static clientBackground  client = new clientBackground();
     static String nickName=null;
+    private DBConnection database = new DBConnection();
 
     //setGui
     //connet
@@ -32,9 +34,9 @@ public class Main extends JFrame {
 
         trayIcon[0] = new TrayIconHandler();
 
-        page_1 = new page_1(trayIcon);
-        page_2 = new page_3();
-        page_3 = new page_4();
+        page_1 = new page_1(database, trayIcon);
+        page_2 = new page_3(database);
+        page_3 = new page_4(database);
 
         // setBounds에서 width: 900으로 하면 오른쪽 패널의 오른쪽 경계선이 보이지 않음
         page_1.setLayout(new GridLayout());
@@ -213,5 +215,6 @@ public class Main extends JFrame {
 
     public static void main(String[] args) {
         new Main();
+
     }
 }

@@ -1,16 +1,13 @@
 package GUI_ver2;
 
 import Features.*;
-import org.openqa.selenium.interactions.Mouse;
+import Features.Timer;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
-import javax.swing.plaf.basic.BasicComboBoxUI;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -100,8 +97,15 @@ class panel1 extends JPanel{   // 1 페이지 panel 생성
 class panel2 extends JPanel{    // 2 페이지 panel 생성
     private TrayIconHandler trayIcon[];
     private JLabel plans[] = new JLabel[7];
-    private int cnt = 0;
+    private JButton checklist[] = new JButton[7]; // 일정 완성했는지에 대한 여부
+    private boolean done[] = new boolean[7]; // 일정 완성했는지에 대한 여부
+    private int planCnt = 0; // 일정 개수
     private Image image;
+    private Vector<Timer> timers;
+    private boolean stop = false; // 일정 멈춤
+
+    private String startHour; // 타이머 시작하는 시간
+    private String endHour; // 타이머 끝나는 시간
 
     private Vector<String> Time_H = new Vector<String>();
     private Vector<String> Time_M = new Vector<String>();
@@ -113,12 +117,14 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
     public panel2(TrayIconHandler trayIcon[]){
         this.setLayout(null);
 
+        timers = new Vector<>();
+
         for(int i = 0; i < 7; i++) {
             plans[i] = new JLabel();
-            plans[i].setBounds(67, 142 + 30 * i, 308, 22);
-            plans[i].setVisible(true);
-            plans[i].setForeground(Color.WHITE);
+
+            done[i] = false;
         }
+
         this.trayIcon = trayIcon;
 
         drawPanel();
@@ -134,9 +140,61 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
             String newPlan = plans[i].getText();
             plans[i] = new JLabel(newPlan);
             plans[i].setForeground(Color.WHITE);
-            plans[i].setFont(new Font("맑은 고딕", Font.PLAIN, 12));
-            plans[i].setBounds(67, 142 + 30 * i, 308, 22);
+            plans[i].setFont(new Font("맑은 고딕", Font.PLAIN, 14));
+            plans[i].setBounds(100, 142 + 40 * i, 308, 22);
             content.add(plans[i]);
+
+            if(done[i]) { // 해당 일정 끝났다고 표시하기
+                //사진크기를 조정 -> 함수로 생성해야할 필요 있음(사진을 버튼 크기에 맞추려면)
+                ImageIcon check = new ImageIcon("src\\GUI_ver2\\image\\check.png");
+                Image check_img = check.getImage();
+                check_img = check_img.getScaledInstance(14, 14, Image.SCALE_SMOOTH);
+                ImageIcon check_icon = new ImageIcon(check_img);
+                checklist[i] = new JButton(check_icon);
+                if(planCnt > i ) { // 계획 개수만큼 허용
+                    checklist[i].setVisible(true);
+                }
+                int finalI = i;
+                checklist[i].addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        done[finalI] = !done[finalI]; // toggle => 일정 아직 완료되지 않음으로 표시
+                        removeAll();
+                        drawPanel();
+                        revalidate();
+                        repaint();
+                    }
+                });
+            }
+            else { // 해당 일정 아직 안 끝냈다고 표시하기
+                //사진크기를 조정 -> 함수로 생성해야할 필요 있음(사진을 버튼 크기에 맞추려면)
+                ImageIcon noCheck = new ImageIcon("src\\GUI_ver2\\image\\noCheck.png");
+                Image noCheck_img = noCheck.getImage();
+                noCheck_img = noCheck_img.getScaledInstance(14, 14, Image.SCALE_SMOOTH);
+                ImageIcon noCheck_icon = new ImageIcon(noCheck_img);
+                checklist[i] = new JButton(noCheck_icon);
+                checklist[i].setEnabled(false);
+                if(planCnt > i ) { // 계획 개수만큼 허용
+                    checklist[i].setVisible(true);
+                    checklist[i].setEnabled(true);
+                }
+                int finalI = i;
+                checklist[i].addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        done[finalI] = !done[finalI]; // toggle => 일정 완료로 표시
+                        removeAll();
+                        drawPanel();
+                        revalidate();
+                        repaint();
+                    }
+                });
+            }
+
+            checklist[i].setBounds(67,148 + 40 * i, 14, 14);
+            checklist[i].setContentAreaFilled(false);
+            checklist[i].setBorderPainted(false);
+            content.add(checklist[i]);
         }
 
         JLabel scheduleTitle = new JLabel("추가 버튼을 눌러 일정을 추가하세요.");
@@ -152,11 +210,10 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
         addButton.setContentAreaFilled(false);
         addButton.setBorderPainted(false);
         addButton.setFont(new Font("맑은 고딕", Font.PLAIN, 16));
-
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(cnt < 7) {
+                if(planCnt < 7) {
                     removeAll();
                     addingSchedule_gui addingSchedule = new addingSchedule_gui();
                     addingSchedule.setBounds(85, 102, 292, 306);
@@ -165,6 +222,46 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
                     drawPanel();
                     revalidate();
                     repaint();
+                }
+            }
+        });
+
+        JButton timerButton = new JButton();
+        if(!stop) {
+            timerButton.setText("일정 멈추기");
+        }
+        else if(timers.size() >= 1) {
+            timerButton.setText("일정 재개");
+        }
+        timerButton.setBounds(280, 80, 100, 31);
+        content.add(timerButton);
+        timerButton.setForeground(Color.WHITE);
+        timerButton.setContentAreaFilled(false);
+        timerButton.setBorderPainted(false);
+        timerButton.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
+        timerButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        timerButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(!stop) {
+                    stop = true;
+                    for (Timer timer : timers) {
+                        timer.setStop(true);
+                        removeAll();
+                        drawPanel();
+                        revalidate();
+                        repaint();
+                    }
+                }
+                else {
+                    stop = false;
+                    for(Timer timer : timers) {
+                        timer.setStop(false);
+                        removeAll();
+                        drawPanel();
+                        revalidate();
+                        repaint();
+                    }
                 }
             }
         });
@@ -188,6 +285,11 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
         JTextField goal_txt;
         JTextField comment_txt;
         JTextField URL;
+        JComboBox HowTo_combo;
+        JComboBox Time_H_S;
+        JComboBox Time_M_S;
+        JComboBox Time_H_E;
+        JComboBox Time_M_E;
         JButton createButton;
         Image image;
         Image backgroundOpaque;
@@ -252,27 +354,27 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
             comment_txt.setBounds(88, 130, 106, 25);
             this.add(comment_txt);
 
-            JComboBox HowTo_combo = new JComboBox(measure);
+            HowTo_combo = new JComboBox(measure);
             HowTo_combo.setBackground(Color.white);
             HowTo_combo.setBounds(88, 180, 83, 25);
             this.add(HowTo_combo);
 
-            JComboBox Time_H_S = new JComboBox(Time_H);
+            Time_H_S = new JComboBox(Time_H);
             Time_H_S.setBackground(Color.white);
             Time_H_S.setBounds(88, 80, 40, 23);
             this.add(Time_H_S);
 
-            JComboBox Time_M_S = new JComboBox(Time_M);
+            Time_M_S = new JComboBox(Time_M);
             Time_M_S.setBackground(Color.white);
             Time_M_S.setBounds(138, 80, 40, 25);
             this.add(Time_M_S);
 
-            JComboBox Time_H_E = new JComboBox(Time_H);
+            Time_H_E = new JComboBox(Time_H);
             Time_H_E.setBackground(Color.white);
             Time_H_E.setBounds(188, 80, 40, 25);
             this.add(Time_H_E);
 
-            JComboBox Time_M_E = new JComboBox(Time_M);
+            Time_M_E = new JComboBox(Time_M);
             Time_M_E.setBackground(Color.white);
             Time_M_E.setBounds(238, 80, 40, 25);
             this.add(Time_M_E);
@@ -367,61 +469,53 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
             createButton.setBorderPainted(false);
             createButton.setFocusPainted(false);
             createButton.setBounds(193, 252, 76, 31);
-
-
-            createButton.addMouseListener(new MouseAdapter() {
+            createButton.addActionListener(new ActionListener() {
                 @Override
-                public void mouseClicked(MouseEvent e) {
+                public void actionPerformed(ActionEvent e) {
                     if(index_S_H<index_E_H){
-                        plans[cnt].setText("* " + getgoal() + " " + getComment());
-                        plans[cnt].setFont(new Font("맑은 고딕", Font.PLAIN, 12));
+                        plans[planCnt].setText("* [" + getGoal() + "] " + getComment() + ", " +
+                                Time_H_S.getSelectedIndex() + ":" + Time_M_S.getSelectedIndex() + " ~ " +
+                                Time_H_E.getSelectedIndex() + ":" + Time_M_E.getSelectedIndex());
+                        plans[planCnt].setFont(new Font("맑은 고딕", Font.PLAIN, 12));
+
+                        checklist[planCnt].setVisible(true); // 체크 박스 표시
+                        checklist[planCnt].setEnabled(true);
 
                         for(JLabel plan_ : plans) {
                             plan_.setVisible(true);
                         }
-                        if(HowTo_combo.getSelectedIndex() != 0) {
-                            WebCrawling webCrawling = new WebCrawling(getAddress()); // 해당 주소로 웹크롤링
-                        }
-                        System.out.println("Added new alert."); // 확인용 메세지
 
-                        /*
-                        tray alert 추가
-                         */
-                        LocalDateTime currentTime = LocalDateTime.now();
-                        if(currentTime.getHour() <= Time_H_S.getSelectedIndex() && currentTime.getMinute() < Time_M_S.getSelectedIndex()) {
-                            trayIcon[0].addAlert(getgoal(), getComment(),
-                                    currentTime.getYear(), currentTime.getMonthValue(), currentTime.getDayOfMonth(),
-                                    Time_H_S.getSelectedIndex(), Time_M_S.getSelectedIndex(),
-                                    TrayIcon.MessageType.NONE);
-                        }
-                        else {
-                            trayIcon[0].addAlert(getgoal(), getComment(),
-                                    currentTime.getYear(), currentTime.getMonthValue(), currentTime.getDayOfMonth() + 1,
-                                    Time_H_S.getSelectedIndex(), Time_M_S.getSelectedIndex(), TrayIcon.MessageType.NONE);
-                        }
+                        addFeatures();
 
                         setVisible(false);
                         removeAll();
                         drawPanel();
                         revalidate();
                         repaint();
-                        cnt++;
+                        planCnt++;
                     }
                     else if (index_S_H==index_E_H){
                         if(index_S_M<=index_E_M){
-                            plans[cnt].setText("* " + getgoal() + " " + getComment());
-                            plans[cnt].setFont(new Font("맑은 고딕", Font.PLAIN, 12));
+                            plans[planCnt].setText("* [" + getGoal() + "] " + getComment() + ", " +
+                                    Time_H_S.getSelectedIndex() + ":" + Time_M_S.getSelectedIndex() + " ~ " +
+                                    Time_H_E.getSelectedIndex() + ":" + Time_M_E.getSelectedIndex());
+                            plans[planCnt].setFont(new Font("맑은 고딕", Font.PLAIN, 12));
+
+                            checklist[planCnt].setVisible(true); // 체크 박스 표시
+                            checklist[planCnt].setEnabled(true);
 
                             for(JLabel plan_ : plans) {
                                 plan_.setVisible(true);
                             }
+
+                            addFeatures();
 
                             setVisible(false);
                             removeAll();
                             drawPanel();
                             revalidate();
                             repaint();
-                            cnt++;
+                            planCnt++;
                         }
                     }
                     else{
@@ -459,12 +553,53 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
             return comment_txt.getText();
         }
 
-        public String getgoal() {
+        public String getGoal() {
             return goal_txt.getText();
         }
 
         public String getAddress() {
             return URL.getText();
+        }
+
+        private void addFeatures() {
+            /*
+             웹크롤링 추가
+            */
+            if(HowTo_combo.getSelectedIndex() != 0) {
+                WebCrawling webCrawling = new WebCrawling(getAddress()); // 해당 주소로 웹크롤링
+            }
+
+            /*
+             타이머 추가
+             */
+            else {
+                String startTime = Time_H_S.getSelectedIndex() + ":" + Time_M_S.getSelectedIndex();
+                String endTime = Time_H_E.getSelectedIndex() + ":" + Time_M_E.getSelectedIndex();
+                long timerSec = ((Time_H_E.getSelectedIndex() - Time_H_S.getSelectedIndex()) * 60 +
+                        (Time_M_E.getSelectedIndex() - Time_M_S.getSelectedIndex())) * 60; // 걸리는 시간을 초 단위로 저장
+
+                Timer timer = new Timer(startTime, timerSec);
+                timer.start();
+                timers.add(timer);
+            }
+
+            /*
+            tray alert 추가
+            */
+            LocalDateTime currentTime = LocalDateTime.now();
+            // 지금보다 뒤의 시간으로 세팅하면 오늘 중 알람
+            if(currentTime.getHour() <= Time_H_S.getSelectedIndex() && currentTime.getMinute() < Time_M_S.getSelectedIndex()) {
+                trayIcon[0].addAlert(getGoal(), getComment(),
+                        currentTime.getYear(), currentTime.getMonthValue(), currentTime.getDayOfMonth(),
+                        Time_H_S.getSelectedIndex(), Time_M_S.getSelectedIndex(),
+                        TrayIcon.MessageType.NONE);
+            }
+            // 지금보다 앞의 시간으로 세팅하면 내일 중 알람
+            else {
+                trayIcon[0].addAlert(getGoal(), getComment(),
+                        currentTime.getYear(), currentTime.getMonthValue(), currentTime.getDayOfMonth() + 1,
+                        Time_H_S.getSelectedIndex(), Time_M_S.getSelectedIndex(), TrayIcon.MessageType.NONE);
+            }
         }
     }
 }

@@ -516,6 +516,7 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
             this.add(createButton);
 
             image = new ImageIcon("src\\GUI_ver2\\image\\rectangle.png").getImage();
+
             JPanel rectangle = new JPanel() {
                 public void paintComponent(Graphics g) {
                     Dimension d = getSize();

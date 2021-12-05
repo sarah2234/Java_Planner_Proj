@@ -98,6 +98,13 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
     private int cnt = 0;
     private Image image;
 
+    private Vector<String> Time_H = new Vector<String>();
+    private Vector<String> Time_M = new Vector<String>();
+    int index_S_H;
+    int index_S_M;
+    int index_E_H;
+    int index_E_M;
+
     public panel2(){
         this.setLayout(null);
 
@@ -157,7 +164,7 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
         });
 
         // 배경화면 생성
-        image = new ImageIcon("src\\GUI_ver2\\image\\background.jpeg").getImage();
+        image = new ImageIcon("C:\\Users\\RC\\IdeaProjects\\javafirst\\src\\GUI_ver1\\image\\background.jpeg").getImage();
         JPanel background = new JPanel() {
             public void paintComponent(Graphics g) {
                 Dimension d = getSize();
@@ -172,13 +179,9 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
     }
 
     class addingSchedule_gui extends JPanel {
-        JLabel addingScheduleLable;
-        JLabel timeLabel;
-        JLabel addressLabel;
-        JLabel commentLabel;
-        JTextField addressTextField;
-        JTextField commentTextField;
-        JTextField timeTextField;
+        JTextField goal_txt;
+        JTextField comment_txt;
+        JTextField URL;
         JButton createButton;
         Image image;
 
@@ -190,64 +193,151 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
                 plans[i].setVisible(false);
             }
 
-            addingScheduleLable = new JLabel("새로운 일정 추가");
-            addingScheduleLable.setForeground(Color.WHITE);
-            addingScheduleLable.setFont(new Font("맑은 고딕", Font.PLAIN, 16));
-            addingScheduleLable.setHorizontalAlignment(SwingConstants.CENTER);
-            addingScheduleLable.setBounds(41, 10, 207, 25);
-            this.add(addingScheduleLable);
+            //여기서 부터 새로 작성한 곳
+            //시간 설정
+            for (int i = 0; i < 24; i++) {
+                Time_H.add(String.valueOf(i));
+            }
+            for (int i = 0; i < 60; i++) {
+                Time_M.add(String.valueOf(i));
+            }
 
-            timeLabel = new JLabel("시간");
-            timeLabel.setHorizontalAlignment(SwingConstants.CENTER);
-            timeLabel.setFont(new Font("맑은 고딕", Font.PLAIN, 14));
-            timeLabel.setForeground(Color.WHITE);
-            timeLabel.setBounds(29, 74, 65, 25);
-            timeLabel.setVisible(true);
-            this.add(timeLabel);
+            String[] measure = {"타이머","블로그","Github"};
 
-            addressLabel = new JLabel("웹 주소");
-            addressLabel.setHorizontalAlignment(SwingConstants.CENTER);
-            addressLabel.setForeground(Color.WHITE);
-            addressLabel.setFont(new Font("맑은 고딕", Font.PLAIN, 14));
-            addressLabel.setBounds(29, 184, 65, 25);
-            this.add(addressLabel);
+            JLabel Goal = new JLabel("목적");
+            Goal.setFont(new Font("맑은 고딕", Font.PLAIN, 14));
+            Goal.setHorizontalAlignment(SwingConstants.CENTER);
+            Goal.setBounds(29, 30, 65, 25);
+            this.add(Goal);
 
-            addressTextField = new JTextField();
-            addressTextField.setBounds(132, 188, 116, 21);
-            addressTextField.setBackground(Color.white);
-            addressTextField.setForeground(Color.gray);
-            addressTextField.setBorder(BorderFactory.createEmptyBorder(2 , 5 , 2 , 5));
-            this.add(addressTextField);
-            //addressTextField.setColumns(10);
+            JLabel Time = new JLabel("시간");
+            Time.setHorizontalAlignment(SwingConstants.CENTER);
+            Time.setFont(new Font("맑은 고딕", Font.PLAIN, 14));
+            Time.setBounds(29, 65, 65, 25);
+            this.add(Time);
 
-            commentLabel = new JLabel("코멘트");
-            commentLabel.setHorizontalAlignment(SwingConstants.CENTER);
-            commentLabel.setForeground(Color.WHITE);
-            commentLabel.setFont(new Font("맑은 고딕", Font.PLAIN, 14));
-            commentLabel.setBounds(29, 129, 65, 25);
-            this.add(commentLabel);
+            JLabel Comment = new JLabel("코멘트");
+            Comment.setHorizontalAlignment(SwingConstants.CENTER);
+            Comment.setFont(new Font("맑은 고딕", Font.PLAIN, 14));
+            Comment.setBounds(29, 100, 65, 25);
+            this.add(Comment);
 
-            commentTextField = new JTextField();
-            //commentTextField.setColumns(10);
-            commentTextField.setBounds(132, 133, 116, 21);
-            commentTextField.setBackground(Color.white);
-            commentTextField.setForeground(Color.gray);
-            commentTextField.setBorder(BorderFactory.createEmptyBorder(2 , 5 , 2 , 5));
-            this.add(commentTextField);
+            JLabel HowTo = new JLabel("측정방법");
+            HowTo.setFont(new Font("맑은 고딕", Font.PLAIN, 14));
+            HowTo.setBounds(29, 135, 65, 25);
+            this.add(HowTo);
 
-            timeTextField = new JTextField();
-            //timeTextField.setColumns(10);
-            timeTextField.setBounds(132, 78, 116, 21);
-            timeTextField.setBackground(Color.white);
-            timeTextField.setForeground(Color.gray);
-            timeTextField.setBorder(BorderFactory.createEmptyBorder(2 , 5 , 2 , 5));
-            this.add(timeTextField);
+            goal_txt = new JTextField();
+            goal_txt.setBounds(88, 34, 106, 25);
+            this.add(goal_txt);
+            goal_txt.setColumns(10);
 
-            Image btn_image = new ImageIcon("src\\GUI_ver2\\image\\예시3.png").getImage();
+            comment_txt = new JTextField();
+            comment_txt.setColumns(10);
+            comment_txt.setBounds(88, 104, 106, 25);
+            this.add(comment_txt);
+
+            JComboBox HowTo_combo = new JComboBox(measure);
+            HowTo_combo.setBounds(88, 138, 83, 25);
+            this.add(HowTo_combo);
+
+            JComboBox Time_H_S = new JComboBox(Time_H);
+            Time_H_S.setBounds(88, 68, 40, 23);
+            this.add(Time_H_S);
+
+            JComboBox Time_M_S = new JComboBox(Time_M);
+            Time_M_S.setBounds(138, 68, 40, 25);
+            this.add(Time_M_S);
+
+            JComboBox Time_H_E = new JComboBox(Time_H);
+            Time_H_E.setBounds(188, 68, 40, 25);
+            this.add(Time_H_E);
+
+            JComboBox Time_M_E = new JComboBox(Time_M);
+            Time_M_E.setBounds(238, 68, 40, 25);
+            this.add(Time_M_E);
+
+            JLabel comma = new JLabel(":");
+            comma.setBounds(131, 68, 10, 25);
+            this.add(comma);
+
+            JLabel comma_1 = new JLabel(":");
+            comma_1.setBounds(231, 68, 10, 25);
+            this.add(comma_1);
+
+            JLabel by = new JLabel("~");
+            by.setBounds(179, 68, 10, 25);
+            this.add(by);
+
+            URL = new JTextField();
+            URL.setBounds(88, 170, 150, 25);
+            this.add(URL);
+            URL.setColumns(10);
+            URL.setVisible(false);
+
+            Time_H_S.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    JComboBox cb = (JComboBox) e.getSource();
+                    index_S_H = cb.getSelectedIndex();
+
+                    System.out.println(index_S_H);
+                }
+            });
+
+            Time_M_S.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    JComboBox cb = (JComboBox) e.getSource();
+                    index_S_M = cb.getSelectedIndex();
+
+                    System.out.println(index_S_M);
+                }
+            });
+
+            Time_H_E.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    JComboBox cb = (JComboBox) e.getSource();
+                    index_E_H = cb.getSelectedIndex();
+
+                    System.out.println(index_E_H);
+                }
+            });
+
+            Time_M_E.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    JComboBox cb = (JComboBox) e.getSource();
+                    index_E_M = cb.getSelectedIndex();
+
+                    System.out.println(index_E_M);
+                }
+            });
+
+            HowTo_combo.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    JComboBox cb = (JComboBox) e.getSource();
+                    int index = cb.getSelectedIndex();
+                    switch (index){
+                        case 0:
+                            URL.setVisible(false);
+                            break;
+                        case 1:
+                        case 2:
+                            URL.setVisible(true);
+                            break;
+                    }
+                }
+            });
+
+
+            Image btn_image = new ImageIcon("C:\\Users\\RC\\IdeaProjects\\javafirst\\src\\GUI_ver1\\image\\예시3.png").getImage();
             Image into_btn_image = btn_image.getScaledInstance(76,31,Image.SCALE_SMOOTH);
             ImageIcon real_btn_image = new ImageIcon(into_btn_image);
 
-            // 버튼에 마우스 대면 배경이 날아가는 오류!!
+
             createButton = new JButton(real_btn_image);
             createButton.setForeground(Color.WHITE);
             createButton.setFont(new Font("맑은 고딕", Font.PLAIN, 16));
@@ -256,26 +346,54 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
             createButton.setBorderPainted(false);
             createButton.setFocusPainted(false);
             createButton.setBounds(193, 252, 76, 31);
+
+
             createButton.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    plans[cnt].setText("* " + getTime() + " " + getComment());
-                    plans[cnt].setFont(new Font("맑은 고딕", Font.PLAIN, 12));
-                    for(JLabel plan_ : plans) {
-                        plan_.setVisible(true);
+                    if(index_S_H<index_E_H){
+                        plans[cnt].setText("* " + getgoal() + " " + getComment());
+                        plans[cnt].setFont(new Font("맑은 고딕", Font.PLAIN, 12));
+
+                        for(JLabel plan_ : plans) {
+                            plan_.setVisible(true);
+                        }
+
+                        setVisible(false);
+                        removeAll();
+                        drawPanel();
+                        revalidate();
+                        repaint();
+                        cnt++;
                     }
-                    setVisible(false);
-                    removeAll();
-                    drawPanel();
-                    revalidate();
-                    repaint();
-                    cnt++;
+                    else if (index_S_H==index_E_H){
+                        if(index_S_M<=index_E_M){
+                            plans[cnt].setText("* " + getgoal() + " " + getComment());
+                            plans[cnt].setFont(new Font("맑은 고딕", Font.PLAIN, 12));
+
+                            for(JLabel plan_ : plans) {
+                                plan_.setVisible(true);
+                            }
+
+                            setVisible(false);
+                            removeAll();
+                            drawPanel();
+                            revalidate();
+                            repaint();
+                            cnt++;
+                        }
+                    }
+                    else{
+                        JOptionPane none = new JOptionPane();
+                        none.showMessageDialog(null, "시간 조정을 제대로 해야합니다.");
+                    }
                 }
             });
 
+
             this.add(createButton);
 
-            image = new ImageIcon("src\\GUI_ver2\\image\\rectangle.png").getImage();
+            image = new ImageIcon("C:\\Users\\RC\\IdeaProjects\\javafirst\\src\\GUI_ver1\\image\\rectangle.png").getImage();
             JPanel background = new JPanel() {
                 public void paintComponent(Graphics g) {
                     Dimension d = getSize();
@@ -287,15 +405,15 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
         }
 
         public String getComment() {
-            return commentTextField.getText();
+            return comment_txt.getText();
         }
 
-        public String getTime() {
-            return timeTextField.getText();
+        public String getgoal() {
+            return goal_txt.getText();
         }
 
         public String getAddress() {
-            return addressTextField.getText();
+            return URL.getText();
         }
     }
 }

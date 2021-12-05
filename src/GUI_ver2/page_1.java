@@ -4,6 +4,7 @@ import org.openqa.selenium.interactions.Mouse;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
+import javax.swing.plaf.basic.BasicComboBoxUI;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -204,75 +205,90 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
 
             String[] measure = {"타이머","블로그","Github"};
 
-            JLabel Goal = new JLabel("목적");
+            JLabel Goal = new JLabel("목표");
             Goal.setFont(new Font("맑은 고딕", Font.PLAIN, 14));
             Goal.setHorizontalAlignment(SwingConstants.CENTER);
+            Goal.setForeground(Color.white);
             Goal.setBounds(29, 30, 65, 25);
             this.add(Goal);
 
             JLabel Time = new JLabel("시간");
             Time.setHorizontalAlignment(SwingConstants.CENTER);
             Time.setFont(new Font("맑은 고딕", Font.PLAIN, 14));
-            Time.setBounds(29, 65, 65, 25);
+            Time.setForeground(Color.white);
+            Time.setBounds(29, 80, 65, 25);
             this.add(Time);
 
             JLabel Comment = new JLabel("코멘트");
             Comment.setHorizontalAlignment(SwingConstants.CENTER);
             Comment.setFont(new Font("맑은 고딕", Font.PLAIN, 14));
-            Comment.setBounds(29, 100, 65, 25);
+            Comment.setForeground(Color.white);
+            Comment.setBounds(29, 130, 65, 25);
             this.add(Comment);
 
             JLabel HowTo = new JLabel("측정방법");
             HowTo.setFont(new Font("맑은 고딕", Font.PLAIN, 14));
-            HowTo.setBounds(29, 135, 65, 25);
+            HowTo.setForeground(Color.WHITE);
+            HowTo.setBounds(29, 180, 65, 25);
             this.add(HowTo);
 
             goal_txt = new JTextField();
-            goal_txt.setBounds(88, 34, 106, 25);
+            goal_txt.setBounds(88, 30, 106, 25);
+            goal_txt.setBackground(Color.white);
+            goal_txt.setForeground(Color.gray);
+            goal_txt.setBorder(BorderFactory.createEmptyBorder(2 , 5 , 2 , 5));
             this.add(goal_txt);
-            goal_txt.setColumns(10);
 
             comment_txt = new JTextField();
-            comment_txt.setColumns(10);
-            comment_txt.setBounds(88, 104, 106, 25);
+            comment_txt.setBackground(Color.white);
+            comment_txt.setForeground(Color.gray);
+            comment_txt.setBorder(BorderFactory.createEmptyBorder(2 , 5 , 2 , 5));
+            comment_txt.setBounds(88, 130, 106, 25);
             this.add(comment_txt);
 
             JComboBox HowTo_combo = new JComboBox(measure);
-            HowTo_combo.setBounds(88, 138, 83, 25);
+            HowTo_combo.setBackground(Color.white);
+            HowTo_combo.setBounds(88, 180, 83, 25);
             this.add(HowTo_combo);
 
             JComboBox Time_H_S = new JComboBox(Time_H);
-            Time_H_S.setBounds(88, 68, 40, 23);
+            Time_H_S.setBackground(Color.white);
+            Time_H_S.setBounds(88, 80, 40, 23);
             this.add(Time_H_S);
 
             JComboBox Time_M_S = new JComboBox(Time_M);
-            Time_M_S.setBounds(138, 68, 40, 25);
+            Time_M_S.setBackground(Color.white);
+            Time_M_S.setBounds(138, 80, 40, 25);
             this.add(Time_M_S);
 
             JComboBox Time_H_E = new JComboBox(Time_H);
-            Time_H_E.setBounds(188, 68, 40, 25);
+            Time_H_E.setBackground(Color.white);
+            Time_H_E.setBounds(188, 80, 40, 25);
             this.add(Time_H_E);
 
             JComboBox Time_M_E = new JComboBox(Time_M);
-            Time_M_E.setBounds(238, 68, 40, 25);
+            Time_M_E.setBackground(Color.white);
+            Time_M_E.setBounds(238, 80, 40, 25);
             this.add(Time_M_E);
 
             JLabel comma = new JLabel(":");
-            comma.setBounds(131, 68, 10, 25);
+            comma.setBounds(131, 80, 10, 25);
             this.add(comma);
 
             JLabel comma_1 = new JLabel(":");
-            comma_1.setBounds(231, 68, 10, 25);
+            comma_1.setBounds(231, 80, 10, 25);
             this.add(comma_1);
 
             JLabel by = new JLabel("~");
-            by.setBounds(179, 68, 10, 25);
+            by.setBounds(179, 80, 10, 25);
             this.add(by);
 
             URL = new JTextField();
-            URL.setBounds(88, 170, 150, 25);
+            URL.setBounds(88, 215, 150, 25);
             this.add(URL);
-            URL.setColumns(10);
+            URL.setBackground(Color.white);
+            URL.setForeground(Color.gray);
+            URL.setBorder(BorderFactory.createEmptyBorder(2 , 5 , 2 , 5));
             URL.setVisible(false);
 
             Time_H_S.addActionListener(new ActionListener() {

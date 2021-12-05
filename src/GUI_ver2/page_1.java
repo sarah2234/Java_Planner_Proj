@@ -190,6 +190,7 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
         JTextField URL;
         JButton createButton;
         Image image;
+        Image backgroundOpaque;
 
         public addingSchedule_gui() {
             this.setLayout(null);
@@ -353,12 +354,12 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
                 }
             });
 
-            Image btn_image = new ImageIcon("src\\GUI_ver2\\image\\예시3.png").getImage();
-            Image into_btn_image = btn_image.getScaledInstance(76,31,Image.SCALE_SMOOTH);
-            ImageIcon real_btn_image = new ImageIcon(into_btn_image);
+//            Image btn_image = new ImageIcon("src\\GUI_ver2\\image\\예시3.png").getImage();
+//            Image into_btn_image = btn_image.getScaledInstance(76,31,Image.SCALE_SMOOTH);
+//            ImageIcon real_btn_image = new ImageIcon(into_btn_image);
 
 
-            createButton = new JButton(real_btn_image);
+            createButton = new JButton("생성");
             createButton.setForeground(Color.WHITE);
             createButton.setFont(new Font("맑은 고딕", Font.PLAIN, 16));
             createButton.setOpaque(false);
@@ -430,14 +431,24 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
                 }
             });
 
-
             this.add(createButton);
 
             image = new ImageIcon("src\\GUI_ver2\\image\\rectangle.png").getImage();
-            JPanel background = new JPanel() {
+            JPanel rectangle = new JPanel() {
                 public void paintComponent(Graphics g) {
                     Dimension d = getSize();
                     g.drawImage(image, 0, 0, 292, 306, null);
+                }
+            };
+            rectangle.setBounds(0,0,450, 530);
+            this.add(rectangle);
+
+            backgroundOpaque = new ImageIcon("src\\GUI_ver2\\image\\background_opaque.jpg").getImage();
+            JPanel background = new JPanel() {
+                public void paintComponent(Graphics g) {
+                    Dimension d = getSize();
+                    // 73, 102, 292, 306
+                    g.drawImage(backgroundOpaque, 0, 0, d.width, d.height, null);
                 }
             };
             background.setBounds(0,0,450, 530);

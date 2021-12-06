@@ -7,8 +7,11 @@ import javax.swing.border.LineBorder;
 import static GUI_ver2.Main.client;
 
 public class Calendar_gui extends JPanel implements ItemListener, ActionListener{
-    String schedule;
     Font fnt = new Font("굴림체", Font.BOLD, 20);
+
+    String str;
+    String y;
+    String m;
 
     //상단
     JPanel selectPane = new JPanel(); //패널생성
@@ -74,8 +77,6 @@ public class Calendar_gui extends JPanel implements ItemListener, ActionListener
         //JFrame의 설정들
         setVisible(true);
         this.setBorder(new LineBorder(Color.RED,3));
-
-        client.setCgui(this);
     }
     //날짜셋팅
     public void setDay() {
@@ -101,6 +102,18 @@ public class Calendar_gui extends JPanel implements ItemListener, ActionListener
             if(w ==1) btn.setForeground(Color.red); //일월화수목금토 (1~7) 1은 일요일이므로 일요일에 red색깔
             if(w ==7) btn.setForeground(Color.blue); //7이므로 blue색깔
             dayPane.add(btn);
+
+
+
+            btn.addMouseListener(new MouseAdapter() {
+                public void mouseClicked(MouseEvent me) {
+                    JButton mouseClick = (JButton) me.getSource();
+                    str = mouseClick.getText();
+                    y = "" + yearCombo.getSelectedItem();
+                    m = "" + monthCombo.getSelectedItem();
+                    System.out.println(y+" "+m+" "+str);
+                }
+            });
         }
     }
     //월화수목금토일 설정
@@ -187,9 +200,16 @@ public class Calendar_gui extends JPanel implements ItemListener, ActionListener
             month++;
         }
     }
-    public void appendSchedule2(String msg) {
-        String[] token = msg.split("#");
-        this.schedule = token[1];
+
+    public String getYear_num(){
+        return y;
+    }
+    public String getMonth_num(){
+        return m;
+    }
+    public String getDay_num(){
+        return str;
     }
 }
+
 

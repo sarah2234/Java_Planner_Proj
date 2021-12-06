@@ -17,9 +17,19 @@ import static GUI_ver2.Main.client;
 class panel1 extends JPanel{   // 1 페이지 panel 생성
     private Vector<Point> v_M = new Vector<Point>();
     private Vector<Point> v = new Vector<Point>();
+    private Image image;        // 배경 이미지
+    private Image starProcedure[] = new Image[7]; // 진행도를 별자리로 나타내기........... 
+    private JButton star[] = new JButton[7]; // 별자리 그림
     int count = 0;
+    private int[] progress; // 일정 진행률
 
-    public panel1(){
+    public panel1(int[] progress){
+        this.progress = progress;
+
+        drawPanel();
+    }
+
+    public void drawPanel() {
         class panel1_StarLight extends JPanel{ // 별자리 찍는 패널
             panel1_StarLight(){
                 Point one = new Point(76,196);           // 양자리 별 좌표(선을 그어줄 좌표)
@@ -41,7 +51,7 @@ class panel1 extends JPanel{   // 1 페이지 panel 생성
                 v_M.add(three_M);
                 v_M.add(four_M);
 
-                setBackground(Color.BLACK);
+                //setBackground(Color.BLACK);
                 setLayout(null);
 
                 for(int i=0; i<4; i++){                     // 별 만들어주기
@@ -65,48 +75,93 @@ class panel1 extends JPanel{   // 1 페이지 panel 생성
         }
 
         panel1_StarLight star_light = new panel1_StarLight();
-        JPanel btnpan = new JPanel();                          // 현재 버튼을 누르면 별자리를 이어주는 버튼을 임시로 생성함.
-        JButton btn = new JButton("누르면 선 증가");
-        btnpan.add(btn);
-        btnpan.setBorder(new LineBorder(Color.ORANGE));
+//        JPanel btnpan = new JPanel();                          // 현재 버튼을 누르면 별자리를 이어주는 버튼을 임시로 생성함.
+//        JButton btn = new JButton("누르면 선 증가");
+//        btnpan.add(btn);
+//        btnpan.setBorder(new LineBorder(Color.ORANGE));
 
-        setLayout(new BorderLayout());
-        add(BorderLayout.CENTER,star_light);
-        add(BorderLayout.SOUTH, btnpan);
+        setLayout(null);
+        //add(BorderLayout.SOUTH, btnpan);
 
-        // 별빛 구현
-        int num = (int) (Math.random()*100+15);
-        for(int i=0;i<num;i++){
-            JLabel la = new JLabel("*");
-            la.setForeground(Color.YELLOW);
-            la.setSize(5,5);
-            la.setLocation((int) (Math.random()*600),(int) (Math.random()*600));
-            star_light.add(la);
+//        // 별빛 구현
+//        int num = (int) (Math.random()*100+15);
+//        for(int i=0;i<num;i++){
+//            JLabel la = new JLabel("*");
+//            la.setForeground(Color.YELLOW);
+//            la.setSize(5,5);
+//            la.setLocation((int) (Math.random()*600),(int) (Math.random()*600));
+//            star_light.add(la);
+//        }
+
+//        btn.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                star_light.setVisible(false);
+//                if(count<3){
+//                    count++;
+//                }
+//                star_light.setVisible(true);
+//            }
+//        });
+
+        // 천칭자리 그리기
+        for(int i = 0; i < 7; i++) {
+            //사진크기를 조정 -> 함수로 생성해야할 필요 있음(사진을 버튼 크기에 맞추려면)
+            String path = "src\\GUI_ver2\\image\\천칭자리_" + i + ".png";
+            starProcedure[i] = new ImageIcon(path).getImage();
+            starProcedure[i] = starProcedure[i].getScaledInstance(450, 520, Image.SCALE_SMOOTH);
+            ImageIcon icon = new ImageIcon(starProcedure[i]);
+            star[i] = new JButton(icon);
+            star[i].setBounds(100, 0, 330,400);
+            star[i].setContentAreaFilled(false);
+            star[i].setBorderPainted(false);
+            star[i].setFocusPainted(false);
+            if(progress[0] >= i) {
+                star[i].setVisible(true);
+            }
+            else {
+                star[i].setVisible(false);
+            }
+            star[i].addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    progress[0]++;
+                    removeAll();
+                    drawPanel();
+                    revalidate();
+                    repaint();
+                }
+            });
+            this.add(star[i]);
         }
 
-        btn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                star_light.setVisible(false);
-                if(count<3){
-                    count++;
-                }
-                star_light.setVisible(true);
+        // 배경화면 생성
+        image = new ImageIcon("src\\GUI_ver2\\image\\login_background_1.jpg").getImage();
+        JPanel background = new JPanel() {
+            public void paintComponent(Graphics g) {
+                Dimension d = getSize();
+                g.drawImage(image, 0, 0, d.width, d.height, null);
+
+                setOpaque(false); // 그림 투명도
+                super.paintComponent(g);
             }
-        });
+        };
+        background.setBounds(0,0,450, 520);
+        this.add(background);
     }
 }
 
 class panel2 extends JPanel{    // 2 페이지 panel 생성
     private TrayIconHandler trayIcon[];
+    int[] progress = new int[1]; // 진행률
     private JLabel plans[] = new JLabel[7];     //일일 계획
     private JButton checklist[] = new JButton[7]; // 일정 완성했는지에 대한 여부
     private boolean done[] = new boolean[7]; // 일정 완성했는지에 대한 여부
     private boolean usingCrawler[] = new boolean[7]; // 각 일정이 웹크롤링을 사용하는지에 대한 여부
     private String urls[] = new String[7]; // url 받아오기
     private int planCnt = 0; // 일정 개수
-    private Image image;        //?
-    private Vector<Timer> timers;       //?
+    private Image image;        // 배경 이미지
+    private Vector<Timer> timers;       // 일정에 타이머 선택 시 사용 => 배열로 해도 되겠지만 임시로 벡터 사용함
     private boolean stop = false; // 일정 멈춤
 
     private String startHour; // 타이머 시작하는 시간
@@ -168,6 +223,7 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         done[finalI] = !done[finalI]; // toggle => 일정 아직 완료되지 않음으로 표시
+                        progress[0]++;
                         removeAll();
                         drawPanel();
                         revalidate();
@@ -204,6 +260,7 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
                                 }
                             }
                             done[finalI] = !done[finalI]; // toggle => 일정 완료로 표시
+                            progress[0]++;
                             removeAll();
                             drawPanel();
                             revalidate();
@@ -615,8 +672,8 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
 
 public class page_1 extends JPanel{
     public page_1(TrayIconHandler trayIcon[]){
-        panel1 P_1 = new panel1();
         panel2 P_2 = new panel2(trayIcon);
+        panel1 P_1 = new panel1(P_2.progress);
         JPanel main = new JPanel();
 
         main.setLayout(new GridLayout(1,2));

@@ -25,8 +25,8 @@ public class TrayIconHandler {
 
     public TrayIconHandler() {
         registerTrayIcon(
-                Toolkit.getDefaultToolkit().getImage("image/status-busy.png"), // 트레이 아이콘 이미지 설정
-                "Example", // 툴팁(설명) 설정
+                Toolkit.getDefaultToolkit().getImage("src\\GUI_ver2\\image\\login_background_1.jpg"), // 트레이 아이콘 이미지 설정
+                "Stardust", // 툴팁(설명) 설정
                 new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) { // 더블 클릭
@@ -45,15 +45,15 @@ public class TrayIconHandler {
         });
 
         // 알람을 추가하는 메뉴 생성
-        addMenuItem("Add new alert", new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("Added new alert."); // 확인용 메세지
-                Thread alert = new Thread(new SystemTrayAlert());
-                alert.start(); // 알람 병행실행
-                alerts.add(alert);
-            }
-        });
+//        addMenuItem("Add new alert", new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                System.out.println("Added new alert."); // 확인용 메세지
+//                Thread alert = new Thread(new SystemTrayAlert());
+//                alert.start(); // 알람 병행실행
+//                alerts.add(alert);
+//            }
+//        });
 
         //Features.TrayIconHandler.displayMessage("Opensource Project", "This is detail.", TrayIcon.MessageType.NONE);
     }

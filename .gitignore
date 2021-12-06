@@ -1,0 +1,11 @@
+.idea
+*.iml
+chromedriver.exe
+Web Crawler
+/.metadata/
+*.class
+.classpath
+.project
+test.java
+selenium-java-4.1.0
+out

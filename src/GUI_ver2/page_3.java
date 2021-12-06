@@ -9,42 +9,205 @@ import java.util.HashMap;
 import java.util.Vector;
 
 class panel5 extends JPanel {     // 5 페이지 panel 생성
-    private Vector<String> goals = new Vector<>(); // (Cal_showWorklist)schedule_lists에 넘기기 위한 변수
-    private Vector<String> times = new Vector<>(); // (Cal_showWorklist)schedule_lists에 넘기기 위한 변수
-    private JPanel schedule_lists; // 새로운 리스트가 생성되었을 때 재할당
+    //DB에서 받은 요소를 이 벡터에 넣는다. 그리고 그것을 이용
+    private Vector<String> goals = new Vector<>();
+    private Vector<String> times = new Vector<>();
+    private Vector<String> comments = new Vector<>();
+    private Vector<String> howto = new Vector<>();
+
+    private String year;
+    private String month;
+    private String day;
 
     panel5(){
+        Calendar_gui Cal = new Calendar_gui();
         // 스케줄 입력 패널
         setLayout(new BorderLayout());
 
-        JPanel scheduling = new JPanel();
-        schedule_lists = new Cal_showWorkList(goals, times);
+        JPanel SouthPanel = new JPanel(new BorderLayout());
+        JPanel date_Panel = new JPanel();
+        date_Panel.setLayout(null);
 
-        scheduling.setLayout(null);
-        Cal_Inf cal_inf = new Cal_Inf();
-        cal_inf.setBounds(10, 10, 320, 60);
-        scheduling.add(cal_inf);
+        JPanel List_scd = new JPanel(new GridLayout(6,1));
+        JLabel title = new JLabel("리스트");
+        JLabel[] list_scd = new JLabel[5];
+        List_scd.add(title);
 
-        // 확인 버튼 패널
-        JButton submit = new JButton("확인");
-        submit.addActionListener(new ActionListener() {
+        for (int i = 0; i < goals.size(); i++) {
+            list_scd[i].setText("* " + goals.elementAt(i)+" "+times.elementAt(i)+" "+comments.elementAt(i)+" "+howto.elementAt(i));
+            list_scd[i].setVisible(true);
+            List_scd.add(list_scd[i]);
+        }
+
+        JLabel WhatDate = new JLabel("날짜 : ");
+        WhatDate.setBounds(10, 10,40,60);
+        date_Panel.add(WhatDate);
+        JLabel date_old = new JLabel();
+
+        // 날짜 전환 확인 버튼 패널
+        JButton check = new JButton("확인");
+        check.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String goal = cal_inf.getGoal();
-                String time = cal_inf.getTime();
-                goals.add(goal);
-                times.add(time);
-                refresh();
+                year = Cal.getYear_num();
+                month = Cal.getMonth_num();
+                day = Cal.getDay_num();
+
+                String date_change = year+"년 "+month+"월 "+day+"일";
+
+                date_old.setText(date_change);
+                date_old.setBounds(50, 10, 150, 60);
+                System.out.println("in "+year+" "+month+" "+day);
+
+                date_Panel.add(date_old);
+                date_Panel.setVisible(false);
+                date_Panel.setVisible(true);
             }
         });
 
-        submit.setBounds(350,50,60, 20);
-        scheduling.add(submit);
+        check.setBounds(350,40,60, 20);
+        date_Panel.add(check);
 
-        scheduling.setBorder(new LineBorder(Color.BLUE));
-        add(BorderLayout.CENTER, scheduling);
-        add(BorderLayout.NORTH, new Calendar_gui());
-        add(BorderLayout.SOUTH, schedule_lists);
+        JButton submit = new JButton("추가");
+        submit.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new Cal_Inf();
+            }
+        });
+
+        submit.setBounds(350,10,60, 20);
+        date_Panel.add(submit);
+
+        SouthPanel.add(BorderLayout.NORTH, date_Panel);
+        SouthPanel.add(BorderLayout.CENTER, List_scd);
+
+        date_Panel.setBorder(new LineBorder(Color.BLUE));
+        date_Panel.setPreferredSize(new Dimension(350,100));
+        add(BorderLayout.CENTER, SouthPanel);
+        add(BorderLayout.NORTH, Cal);
+    }
+
+    public class Cal_Inf extends JFrame{
+        private JTextField goal_txt;
+        private JTextField time_txt;
+        private JTextField comment_txt;
+        private JTextField howto_txt;
+        private String[] measure = {"타이머","블로그","Github"};
+        private int measure_int;
+        private JComboBox<String> how_to = new JComboBox<String>(measure);
+        public Cal_Inf(){
+            JPanel All = new JPanel();
+            All.setLayout(null);
+
+            JLabel goal_label = new JLabel("목표", JLabel.CENTER);
+            goal_label.setBounds(10, 20, 50, 18);
+
+            JLabel time_label = new JLabel("시간", JLabel.CENTER);
+            time_label.setBounds(10, 40, 50, 18);
+
+            JLabel comment = new JLabel("코멘트", JLabel.CENTER);
+            comment.setBounds(10, 60, 50, 18);
+
+            JLabel Howto = new JLabel("측정방법",JLabel.CENTER);
+            Howto.setBounds(10, 80,50,18);
+
+            JButton addit = new JButton("추가");
+            addit.setBounds(200,140,60,50);
+
+            goal_txt = new JTextField(10);
+            goal_txt.setBounds(70, 20, 50, 18);
+
+            time_txt = new JTextField(10);
+            time_txt.setBounds(70, 40, 50, 18);
+
+            comment_txt = new JTextField(10);
+            comment_txt.setBounds(70, 60, 100, 18);
+
+            how_to.setBounds(70,80,80,18);
+
+            howto_txt = new JTextField(10);
+            howto_txt.setBounds(70,100,150,18);
+
+            goal_txt.setBorder(new LineBorder(Color.ORANGE));
+            time_txt.setBorder(new LineBorder(Color.ORANGE));
+            comment_txt.setBorder(new LineBorder(Color.ORANGE));
+
+            All.add(goal_label);
+            All.add(goal_txt);
+            All.add(time_label);
+            All.add(time_txt);
+            All.add(comment);
+            All.add(comment_txt);
+            All.add(Howto);
+            All.add(how_to);
+            All.add(howto_txt);
+            All.add(addit);
+            howto_txt.setVisible(false);
+
+            how_to.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    JComboBox cb = (JComboBox) e.getSource();
+                    int index = cb.getSelectedIndex();
+                    measure_int = index;
+                    switch (index){
+                        case 0:
+                            howto_txt.setVisible(false);
+                            break;
+                        case 1:
+                        case 2:
+                            howto_txt.setVisible(true);
+                            break;
+                    }
+                }
+            });
+
+            addit.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    dispose();
+                    // 데이터 보내주기
+                    goals.add(getGoal());
+                    times.add(getTime());
+                    comments.add(getComment());
+                    howto.add(getHowto());
+                    System.out.println(getGoal());
+                    System.out.println(getTime());
+                    System.out.println(getComment());
+                    System.out.println(getHowto());
+                    System.out.println(getURL());
+                    refresh();
+                }
+            });
+
+            All.setBorder(new LineBorder(Color.BLUE));
+
+            add(All);
+
+            setSize(280,230);
+            setVisible(true);
+        }
+
+        public String getGoal() {
+            return goal_txt.getText();
+        }
+
+        public String getTime() {
+            return time_txt.getText();
+        }
+
+        public String getComment(){
+            return comment_txt.getText();
+        }
+
+        public String getURL(){
+            return howto_txt.getText();
+        }
+
+        public String getHowto(){
+            return measure[measure_int];
+        }
     }
 
     // 새로 고침
@@ -53,37 +216,74 @@ class panel5 extends JPanel {     // 5 페이지 panel 생성
         revalidate();
         repaint();
 
+        Calendar_gui Cal = new Calendar_gui();
         // 스케줄 입력 패널
         setLayout(new BorderLayout());
 
-        JPanel scheduling = new JPanel();
-        JPanel[] schedule_lists = {new Cal_showWorkList(goals, times)};
+        JPanel date_Panel = new JPanel();
+        date_Panel.setLayout(null);
 
-        scheduling.setLayout(null);
-        Cal_Inf cal_inf = new Cal_Inf();
-        cal_inf.setBounds(10, 10, 320, 60);
-        scheduling.add(cal_inf);
+        JPanel List_scd = new JPanel(new GridLayout(6,1));
+        JLabel title = new JLabel("리스트");
+        JLabel[] list_scd = new JLabel[5];
+        List_scd.add(title);
+
+        for (int i = 0; i < 5; i++) {
+            list_scd[i] = new JLabel();
+        }
+
+        System.out.println(goals.size());
+
+        for (int i = 0; i < goals.size(); i++) {
+            list_scd[i].setText("* " + goals.elementAt(i)+times.elementAt(i)+comments.elementAt(i)+howto.elementAt(i));
+            list_scd[i].setVisible(true);
+            System.out.println(list_scd[i]);
+            List_scd.add(list_scd[i]);
+        }
+        System.out.println(goals.size());
+
+        JLabel date_old = new JLabel();
 
         // 확인 버튼 패널
-        JButton submit = new JButton("확인");
-        submit.addActionListener(new ActionListener() {
+        JButton check = new JButton("확인");
+        check.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String goal = cal_inf.getGoal();
-                String time = cal_inf.getTime();
-                goals.add(goal);
-                times.add(time);
-                refresh();
+                year = Cal.getYear_num();
+                month = Cal.getMonth_num();
+                day = Cal.getDay_num();
+
+                String date_change = year+"년 "+month+"월 "+day+"일";
+
+                date_old.setText(date_change);
+                date_old.setBounds(10, 10, 150, 30);
+                System.out.println("in"+year+" "+month+" "+day);
+
+                date_Panel.add(date_old);
+                date_Panel.setVisible(false);
+                date_Panel.setVisible(true);
             }
         });
 
-        submit.setBounds(350,50,60, 20);
-        scheduling.add(submit);
+        check.setBounds(350,40,60, 20);
+        date_Panel.add(check);
 
-        scheduling.setBorder(new LineBorder(Color.BLUE));
-        add(BorderLayout.CENTER, scheduling);
-        add(BorderLayout.NORTH, new Calendar_gui());
-        add(BorderLayout.SOUTH, schedule_lists[0]);
+        JButton submit = new JButton("추가");
+        submit.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new Cal_Inf();
+            }
+        });
+
+        submit.setBounds(350,10,60, 20);
+        date_Panel.add(submit);
+
+
+        date_Panel.setBorder(new LineBorder(Color.BLUE));
+        add(BorderLayout.CENTER, date_Panel);
+        add(BorderLayout.NORTH, Cal);
+        add(BorderLayout.SOUTH, List_scd);
     }
 }
 
@@ -151,7 +351,7 @@ class panel6 extends JPanel{    // 6 페이지 panel 생성
         content.add(scheduleTitle);
 
         // 배경화면 생성
-        image_2 = new ImageIcon("C:\\Users\\RC\\IdeaProjects\\javafirst\\src\\GUI_ver1\\image\\background.jpeg").getImage();
+        image_2 = new ImageIcon("src\\GUI_ver2\\image\\background.jpeg").getImage();
         JPanel background = new JPanel() {
             public void paintComponent(Graphics g) {
                 Dimension d = getSize();

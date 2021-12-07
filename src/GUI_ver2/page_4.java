@@ -30,6 +30,12 @@ class panel7 extends JPanel {
         Period.setForeground(Color.white);
         add(Period);
 
+        JLabel Period_unit = new JLabel("달");
+        Period_unit.setHorizontalAlignment(SwingConstants.CENTER);
+        Period_unit.setBounds(180,156,50,20);
+        Period_unit.setForeground(Color.white);
+        add(Period_unit);
+
         JLabel Comment = new JLabel("코멘트");
         Comment.setHorizontalAlignment(SwingConstants.CENTER);
         Comment.setBounds(70, 216, 70, 20);
@@ -128,7 +134,7 @@ class panel7 extends JPanel {
 
 
         Period_txt.setColumns(10);
-        Period_txt.setBounds(140, 156, 250, 20);
+        Period_txt.setBounds(140, 156, 50, 20);
         add(Period_txt);
 
 

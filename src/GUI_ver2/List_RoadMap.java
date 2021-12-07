@@ -1,40 +1,46 @@
 package GUI_ver2;
 // 추가
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 
-public class List_RoadMap extends JPanel {   // 로드맵 리스트의 값을 받아야 한다. DB에 연결해서 값을 전달 받아야 함.
+//목표,기간,코멘트,요일,참가여부를 파라미터로 보내줘야함.
+// 목표+i 같은 곳을 받은 변수로 넣기
+
+public class List_RoadMap extends JPanel {
     public List_RoadMap(int i){
         setLayout(null);
 
         JLabel Goal = new JLabel("목표"+i);
         Goal.setHorizontalAlignment(SwingConstants.CENTER);
-        Goal.setBounds(0, 0, 75, 30);
+        Goal.setBounds(0, 0, 65, 25);
+        Goal.setBorder(new LineBorder(Color.WHITE));
+        Goal.setForeground(Color.white);
         add(Goal);
 
         JLabel Period = new JLabel("기간"+i);
         Period.setHorizontalAlignment(SwingConstants.CENTER);
-        Period.setBounds(75, 0, 75, 30);
+        Period.setBounds(65, 0, 65, 25);
+        Period.setBorder(new LineBorder(Color.WHITE));
+        Period.setForeground(Color.white);
         add(Period);
-
-        JLabel Time = new JLabel("시간"+i);
-        Time.setHorizontalAlignment(SwingConstants.CENTER);
-        Time.setBounds(150, 0, 75, 30);
-        add(Time);
 
         JLabel DayOfWeek = new JLabel("요일"+i);
         DayOfWeek.setHorizontalAlignment(SwingConstants.CENTER);
-        DayOfWeek.setBounds(225, 0, 75, 30);
+        DayOfWeek.setBounds(130, 0, 150, 25);
+        DayOfWeek.setBorder(new LineBorder(Color.WHITE));
+        DayOfWeek.setForeground(Color.white);
         add(DayOfWeek);
-
-        JLabel HowTo = new JLabel("측정방식"+i);
-        HowTo.setHorizontalAlignment(SwingConstants.CENTER);
-        HowTo.setBounds(300, 0, 75, 30);
-        add(HowTo);
 
         JButton join = new JButton("참여");
         join.setFont(new Font("굴림", Font.PLAIN, 8));
-        join.setBounds(385, 0, 60, 30);
+        join.setBounds(280, 0, 60, 25);
+        join.setBorder(new LineBorder(Color.WHITE));
+        join.setForeground(Color.white);
+        join.setBackground(Color.black);
         add(join);
+
+        //코멘트를 팁으로 넣어줘야한다.
+        this.setToolTipText("코멘트"+i);
     }
 }

@@ -45,50 +45,65 @@ class panel7 extends JPanel {
         JButton Mon = new JButton("월");
         Mon.setFont(new Font("굴림", Font.PLAIN, 10));
         Mon.setBounds(85, 316, 45, 30);
-        Mon.setBackground(Color.BLUE);
+        Mon.setBackground(new Color(0,0,0,0));
         Mon.setForeground(Color.white);
+        Mon.setOpaque(false);
+        Mon.setContentAreaFilled(false);
+        Mon.setFocusPainted(false);
         add(Mon);
 
         JButton Tue = new JButton("화");
         Tue.setFont(new Font("굴림", Font.PLAIN, 10));
         Tue.setBounds(130, 316, 45, 30);
-        Tue.setBackground(Color.BLUE);
         Tue.setForeground(Color.white);
+        Tue.setOpaque(false);
+        Tue.setContentAreaFilled(false);
+        Tue.setFocusPainted(false);
         add(Tue);
 
         JButton Wen = new JButton("수");
         Wen.setFont(new Font("굴림", Font.PLAIN, 10));
         Wen.setBounds(175, 316, 45, 30);
-        Wen.setBackground(Color.BLUE);
         Wen.setForeground(Color.white);
+        Wen.setOpaque(false);
+        Wen.setContentAreaFilled(false);
+        Wen.setFocusPainted(false);
         add(Wen);
 
         JButton Thu = new JButton("목");
         Thu.setFont(new Font("굴림", Font.PLAIN, 10));
         Thu.setBounds(220, 316, 45, 30);
-        Thu.setBackground(Color.BLUE);
         Thu.setForeground(Color.white);
+        Thu.setOpaque(false);
+        Thu.setContentAreaFilled(false);
+        Thu.setFocusPainted(false);
         add(Thu);
 
         JButton Fri = new JButton("금");
         Fri.setFont(new Font("굴림", Font.PLAIN, 10));
         Fri.setBounds(265, 316, 45, 30);
-        Fri.setBackground(Color.BLUE);
         Fri.setForeground(Color.white);
+        Fri.setOpaque(false);
+        Fri.setContentAreaFilled(false);
+        Fri.setFocusPainted(false);
         add(Fri);
 
         JButton Sat = new JButton("토");
         Sat.setFont(new Font("굴림", Font.PLAIN, 10));
         Sat.setBounds(310, 316, 45, 30);
-        Sat.setBackground(Color.BLUE);
         Sat.setForeground(Color.white);
+        Sat.setOpaque(false);
+        Sat.setContentAreaFilled(false);
+        Sat.setFocusPainted(false);
         add(Sat);
 
         JButton Sun = new JButton("일");
         Sun.setFont(new Font("굴림", Font.PLAIN, 10));
         Sun.setBounds(355, 316, 45, 30);
-        Sun.setBackground(Color.BLUE);
         Sun.setForeground(Color.white);
+        Sun.setOpaque(false);
+        Sun.setContentAreaFilled(false);
+        Sun.setFocusPainted(false);
         add(Sun);
 
         JButton Save_btn = new JButton("Save RoadMap");
@@ -127,10 +142,12 @@ class panel7 extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 DayOfWeek_bool[0] = !(DayOfWeek_bool[0]);
                 if(DayOfWeek_bool[0]){
+                    Mon.setOpaque(true);
                     Mon.setBackground(Color.ORANGE);
                 }
-                else
-                    Mon.setBackground(Color.BLUE);
+                else {
+                    Mon.setOpaque(false);
+                }
             }
         });
 
@@ -139,10 +156,12 @@ class panel7 extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 DayOfWeek_bool[1] = !(DayOfWeek_bool[1]);
                 if(DayOfWeek_bool[1].equals(true)){
+                    Tue.setOpaque(true);
                     Tue.setBackground(Color.ORANGE);
                 }
-                else
-                    Tue.setBackground(Color.BLUE);
+                else {
+                    Tue.setOpaque(false);
+                }
             }
         });
 
@@ -151,10 +170,12 @@ class panel7 extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 DayOfWeek_bool[2] = !(DayOfWeek_bool[2]);
                 if(DayOfWeek_bool[2].equals(true)){
+                    Wen.setOpaque(true);
                     Wen.setBackground(Color.ORANGE);
                 }
-                else
-                    Wen.setBackground(Color.BLUE);
+                else{
+                    Wen.setOpaque(false);
+                }
             }
         });
 
@@ -163,10 +184,12 @@ class panel7 extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 DayOfWeek_bool[3] = !(DayOfWeek_bool[3]);
                 if(DayOfWeek_bool[3].equals(true)){
+                    Thu.setOpaque(true);
                     Thu.setBackground(Color.ORANGE);
                 }
-                else
-                    Thu.setBackground(Color.BLUE);
+                else {
+                    Thu.setOpaque(false);
+                }
             }
         });
 
@@ -175,10 +198,12 @@ class panel7 extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 DayOfWeek_bool[4] = !(DayOfWeek_bool[4]);
                 if(DayOfWeek_bool[4].equals(true)){
+                    Fri.setOpaque(true);
                     Fri.setBackground(Color.ORANGE);
                 }
-                else
-                    Fri.setBackground(Color.BLUE);
+                else {
+                    Fri.setOpaque(false);
+                }
             }
         });
 
@@ -187,10 +212,12 @@ class panel7 extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 DayOfWeek_bool[5] = !(DayOfWeek_bool[5]);
                 if(DayOfWeek_bool[5].equals(true)){
+                    Sat.setOpaque(true);
                     Sat.setBackground(Color.ORANGE);
                 }
-                else
-                    Sat.setBackground(Color.BLUE);
+                else {
+                    Sat.setOpaque(false);
+                }
             }
         });
 
@@ -199,10 +226,12 @@ class panel7 extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 DayOfWeek_bool[6] = !(DayOfWeek_bool[6]);
                 if(DayOfWeek_bool[6].equals(true)){
+                    Sun.setOpaque(true);
                     Sun.setBackground(Color.ORANGE);
                 }
-                else
-                    Sun.setBackground(Color.BLUE);
+                else {
+                    Sun.setOpaque(false);
+                }
             }
         });
 
@@ -218,7 +247,7 @@ class panel7 extends JPanel {
         });
 
 
-        image = new ImageIcon("src\\GUI_ver2\\image\\login_background_1.jpg").getImage();
+        image = new ImageIcon("src\\GUI_ver1\\image\\login_background_1.jpg").getImage();
         JPanel background = new JPanel() {
             public void paintComponent(Graphics g) {
                 Dimension d = getSize();
@@ -248,7 +277,7 @@ class panel7 extends JPanel {
     }
 
     public String goToDB(){
-        return getgoal()+"%"+getperiod()+"%"+getTime()+"%"+WeekOfDay();
+        return getgoal()+"%"+getperiod()+"%"+ getTime()+"%"+WeekOfDay();
     }
 }
 

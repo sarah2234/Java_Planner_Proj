@@ -175,9 +175,33 @@ public class serverBackground {
                         gui.appendMsg(RoadMap_msg);
                         sendOne(nick,"RId#" + RoadMap_msg);
                     }
-//                    else if("") {
-//                        String[][] Schedules = connection.bringSchedule(nick);
-//                    }
+                    else if("cal".equals(token[0])) {
+                        String result="";
+                        String[] Dtoken = token[1].split("/");
+                        int[] DateToken = new int[3];       //
+                        for(int i=0; i<3; i++){
+                            DateToken[i] = Integer.parseInt(Dtoken[i]);
+                        }
+                        String[][] Schedules = connection.bringSchedule(nick, DateToken[0], DateToken[1], DateToken[2]);
+                        for(int i=0; i<Schedules.length; i++){
+                            for(int j=0; j<Schedules[i].length; j++){
+                                if(j==0) {
+                                    Schedules[i][j] = connection.getSchedulename(Schedules[i][j]);
+                                    result = result + Schedules[i][j] + "%";
+                                }
+                                else
+                                    result = result + Schedules[i][j] + "%";
+                            }
+                            result = result.substring(0, result.length()-1);
+                            result = result + "@";      //각각 Schedule 정보 나누기 @ :)
+                        }
+                        if(!result.equals(""))
+                            result = result.substring(0, result.length()-1);
+                        System.out.println(result);
+                        gui.appendMsg(result);
+                        sendOne(nick, "cal#" + result);
+
+                    }
                     else if("search".equals(token[0])) {
                         connection.startRoadmap(nick, token[1]);
                         String[] RoadMap_Id = connection.searchRoadmap(token[1]);      //참가를 신청한 로드맵 아이디들
@@ -223,7 +247,7 @@ public class serverBackground {
                                 DateToken[i] = Integer.parseInt(Dtoken[i]);
                             }
                             String result = "";
-                            Schedule=connection.bringSchedule(nick, DateToken[0], DateToken[1], DateToken[2]-1);
+                            Schedule=connection.bringSchedule(nick, DateToken[0], DateToken[1], DateToken[2]);
                             for(int i=0; i<Schedule.length; i++){
                                 for(int j=0; j<Schedule[i].length; j++){
                                     if(j==0) {
@@ -233,10 +257,12 @@ public class serverBackground {
                                     else
                                         result = result + Schedule[i][j] + "%";
                                 }
-                                result = result.substring(0, result.length()-1);
+                                result = result.substring(0, result.length() - 1);
                                 result = result + "@";      //각각 Schedule 정보 나누기 @ :)
+
                             }
-                            result = result.substring(0, result.length()-1);
+                            if(!result.equals(""))
+                                result = result.substring(0, result.length()-1);
                             System.out.println(result);
                             gui.appendMsg(result);
                             sendOne(nick, "sch#" + result);

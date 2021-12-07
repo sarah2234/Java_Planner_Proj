@@ -13,7 +13,7 @@ public class clientBackground {
     private DataOutputStream out;
     private Main Mgui;      //사용자 Gui
     private panel10 Lgui;
-    private Calendar_gui Cgui;      //Calendar
+    private panel5 Cgui;      //Calendar
     private panel2 Sgui;            //panel2
     private panel8 Rgui;        //RoadMap, panel8
     private panel6 Jgui;        //RoadMap Join, panel6
@@ -28,7 +28,7 @@ public class clientBackground {
         this.Lgui = Lgui;
     }
 
-    public final void setCgui(Calendar_gui Cgui) {    //panel2
+    public final void setCgui(panel5 Cgui) {    //panel2
         this.Cgui = Cgui;
     }
 
@@ -43,6 +43,8 @@ public class clientBackground {
     public final void setJgui(panel6 Jgui) {
         this.Jgui = Jgui;
     }
+
+
 
     public void connet() {      //server와 연결
         try {
@@ -75,9 +77,9 @@ public class clientBackground {
                     System.out.println(msg);
                     Rgui.appendSearch(token[1]);
                 }
-                else if("sch2".equals(token[0])){
+                else if("cal".equals(token[0])){
                     System.out.println(msg);
-                    //Cgui.appendSchedule2(msg);      //panel2 -> Calendar / -> Calendar
+                    Cgui.appendCal(token[1]);      //panel2 -> Calendar / -> Calendar
                 }
                 else if("pwd".equals(token[0])) {
                     System.out.println(msg);
@@ -161,6 +163,14 @@ public class clientBackground {
     public void sendSearch(String Search) {
         try {
             out.writeUTF("search#" + Search);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void sendCalendar(String Calendar) {
+        try {
+            out.writeUTF("cal#" + Calendar);
         } catch (IOException e) {
             e.printStackTrace();
         }

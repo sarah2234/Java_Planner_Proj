@@ -496,6 +496,14 @@ class panel8 extends JPanel {
 
     public void appendRoadMap(String msg) { //String Month, String Week, String Comment, String Aim, String RoadId
         //removeAll();
+        V_List.clear();
+        Month.clear();
+        Week.clear();
+        Comment.clear();
+        Aim.clear();
+        RoadId.clear();
+        Center.removeAll();
+
         System.out.println(msg + "panel8로 옴");
         String[] Token = msg.split("@");
         for (int i = 0; i<Token.length; i++) {     //@+1
@@ -526,8 +534,8 @@ class panel8 extends JPanel {
             num=Month.size();
         else if(Month.size()>=10)
             num=10;
-        V_List.clear();
-        Center.removeAll();
+
+
         System.out.println(V_List.size() + "V_List 사이즈입니다 :)");
 
         for (int i = 0; i < num; i++) {
@@ -541,9 +549,9 @@ class panel8 extends JPanel {
 
             V_List.add(new_List);
             Center.add(V_List.elementAt(i));
-
             //Center.setVisible(true);
         }
+        System.out.println(V_List.size() + "V_List 사이즈");
 
         //drawPanel();
         revalidate();

@@ -672,8 +672,7 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
         System.out.println(msg);
         String[][] Sche = new String[7][6];
         String[] Token = msg.split("@");
-        for(int i=0; i<2; i++) {
-
+        for(int i=0; i<Token.length; i++) {
             String[] token = Token[i].split("%");
             for(int j=0; j<6; j++) {
                 Sche[i][j] = token[j];

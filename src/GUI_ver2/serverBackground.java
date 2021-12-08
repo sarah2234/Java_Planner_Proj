@@ -1,5 +1,6 @@
 package GUI_ver2;
 
+import database.DBConnection;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -9,9 +10,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class serverBackground {
-
+    private DBConnection connection = new DBConnection();
     private ServerSocket serverSocket;
     private Socket socket;
     private serverGui gui;
@@ -99,19 +102,194 @@ public class serverBackground {
                     msg = in.readUTF();
                     System.out.println(msg);
                     String[] token = msg.split("#") ;
+
                     if("sch".equals(token[0])) {            //일일 스케쥴 생성
                         String[] Token = token[1].split("%");   //DB에 넣어주세요, Token[0]부터 넣으시면 됩니다.
+
+                        String[] Dtoken = Token[0].split("/");
+                        int[] DateToken = new int[3];       //
+                        for(int i=0; i<3; i++){
+                            DateToken[i] = Integer.parseInt(Dtoken[i]);
+                        }
+
+                        String[] Ttoken = Token[2].split("~");
+                        String[] timeToken = new String[2];       //
+                        for(int i=0; i<2; i++){
+                            timeToken[i] = Ttoken[i];
+                        }
+
+                        if(Token[4].equals("타이머")) {
+                            connection.insertSchedule(nick, DateToken[0], DateToken[1], DateToken[2], timeToken[0], timeToken[1], Token[4], Token[1], null, Token[3]);
+                        }
+                        else
+                            connection.insertSchedule(nick, DateToken[0], DateToken[1], DateToken[2], timeToken[0], timeToken[1], Token[4], Token[1], Token[5], Token[3]);
                         sendOne(nick, "sch#" + token[1]);       //날짜%목표%시간%코멘트%측정방법%주소 순서로 저장되어 있습니다.
                         gui.appendMsg(msg);
+
+                    }
+                    else if("road".equals(token[0])){
+
+                        String[] Token = token[1].split("%");       //목표%기간%커멘트%요일
+                        int month_duration = Integer.parseInt(Token[1]);
+                        connection.insertRoadmap(month_duration, Token[3], 0, Token[0], Token[2]);
+                        String[] RoadMap_info;
+                        String[] RoadMap_id_all = connection.bringAllRoadmapId();
+                        String RoadMap_msg = "";
+
+                        for(int i=0; i<RoadMap_id_all.length; i++) {        //
+                            RoadMap_info = connection.bringRoadmap(RoadMap_id_all[i]);
+                            System.out.println(RoadMap_info[0]);
+
+                            for(int j=0; j<RoadMap_info.length; j++) {
+                                RoadMap_msg = RoadMap_msg + RoadMap_info[j] + "%";
+                            }
+                            RoadMap_msg += connection.getRoadmapname(RoadMap_id_all[i]);
+                            RoadMap_msg += "%" + RoadMap_id_all[i];
+                            //RoadMap_msg = RoadMap_msg.substring(0, RoadMap_msg.length()-1);
+                            RoadMap_msg = RoadMap_msg + "@";
+                        }
+                        RoadMap_msg = RoadMap_msg.substring(0, RoadMap_msg.length()-1);
+
+                        sendOne(nick,"road#" + RoadMap_msg);
+                    }
+                    else if("RId".equals(token[0])) {
+                        connection.startRoadmap(nick, token[1]);
+                        String[] RoadMap_Id = connection.bringParticipatedRoadmapId(nick);      //참가를 신청한 로드맵 아이디들
+                        String[] RoadMap_info;
+                        //String[] RoadMap_id_all = connection.bringAllRoadmapId();
+                        String RoadMap_msg = "";
+
+                        for(int i=0; i<RoadMap_Id.length; i++) {        //
+                            RoadMap_info = connection.bringRoadmap(RoadMap_Id[i]);
+                            System.out.println(RoadMap_info[0]);
+
+                            for(int j=0; j<RoadMap_info.length; j++) {
+                                RoadMap_msg = RoadMap_msg + RoadMap_info[j] + "%";
+                            }
+                            RoadMap_msg += connection.getRoadmapname(RoadMap_Id[i]);
+                            RoadMap_msg += "%" + RoadMap_Id[i];
+                            //RoadMap_msg = RoadMap_msg.substring(0, RoadMap_msg.length()-1);
+                            RoadMap_msg = RoadMap_msg + "@";
+                        }
+                        RoadMap_msg = RoadMap_msg.substring(0, RoadMap_msg.length()-1);
+                        gui.appendMsg(RoadMap_msg);
+                        sendOne(nick,"RId#" + RoadMap_msg);
+                    }
+                    else if("cal".equals(token[0])) {
+                        String result="";
+                        String[] Dtoken = token[1].split("/");
+                        int[] DateToken = new int[3];       //
+                        for(int i=0; i<3; i++){
+                            DateToken[i] = Integer.parseInt(Dtoken[i]);
+                        }
+                        String[][] Schedules = connection.bringSchedule(nick, DateToken[0], DateToken[1], DateToken[2]);
+                        for(int i=0; i<Schedules.length; i++){
+                            for(int j=0; j<Schedules[i].length; j++){
+                                if(j==0) {
+                                    Schedules[i][j] = connection.getSchedulename(Schedules[i][j]);
+                                    result = result + Schedules[i][j] + "%";
+                                }
+                                else
+                                    result = result + Schedules[i][j] + "%";
+                            }
+                            result = result.substring(0, result.length()-1);
+                            result = result + "@";      //각각 Schedule 정보 나누기 @ :)
+                        }
+                        if(!result.equals(""))
+                            result = result.substring(0, result.length()-1);
+                        System.out.println(result);
+                        gui.appendMsg(result);
+                        sendOne(nick, "cal#" + result);
+
+                    }
+                    else if("search".equals(token[0])) {
+                        connection.startRoadmap(nick, token[1]);
+                        String[] RoadMap_Id = connection.searchRoadmap(token[1]);      //참가를 신청한 로드맵 아이디들
+                        String[] RoadMap_info;
+                        //String[] RoadMap_id_all = connection.bringAllRoadmapId();
+                        String RoadMap_msg = "";
+
+                        int example = 0;
+
+                        for(int k=0; RoadMap_Id[k] != null; k++) {
+                            example++;
+                        }
+
+                        for(int i=0; i<example; i++) {        //
+                            RoadMap_info = connection.bringRoadmap(RoadMap_Id[i]);
+                            System.out.println(RoadMap_info[0]);
+
+                            for(int j=0; j<RoadMap_info.length; j++) {
+                                RoadMap_msg = RoadMap_msg + RoadMap_info[j] + "%";
+                            }
+                            RoadMap_msg += connection.getRoadmapname(RoadMap_Id[i]);
+                            RoadMap_msg += "%" + RoadMap_Id[i];
+                            //RoadMap_msg = RoadMap_msg.substring(0, RoadMap_msg.length()-1);
+                            RoadMap_msg = RoadMap_msg + "@";
+                        }
+                        RoadMap_msg = RoadMap_msg.substring(0, RoadMap_msg.length()-1);
+                        gui.appendMsg(RoadMap_msg);
+                        sendOne(nick,"search#" + RoadMap_msg);
                     }
                     else if("pwd".equals(token[0])) {         //로그인 / 아이디는 nick, 비밀번호는 pwd -> DB에서 비교 후 맞으면 check 뿌리기
-                        sendOne(nick, "pwd#" + "check");     //사용자로부터 받은 내용을 사용자에게 뿌림, 단 문자열에 # 포함되면 안됨
-                        gui.appendMsg(msg);              //사용자로부터 받은 내용을 서버 gui에 뿌림
-                        //DB에서 정보 뽑기 :)
-                        //sendOne(nick, "sch#" + DB정보);      //사용자와 연결된 모든 schedule 정보을 Calendar에 준다.(구현), 이중배열 이용하기.
-                        //sendOne(nick, "Tsch" + DB정보);      //사용자와 연결된 schedule 정보를 일일 스케쥴에(panel2) 준다.(미구현)
-                        //sendOne(nick, "Sroad" + DB정보);     //현재 저장된 모든 RoadMap 정보를 3장 오른쪽에 준다.(미구현)
-                        //sendOne(nick, "Myroad" + DB정보);    //사용자와 연결된 RoadMap 정보를 2장 오른쪽에 준다.(미구현)
+                        if(connection.logIn(nick, token[1])){
+                            String[][] Schedule;
+
+                            sendOne(nick, "pwd#" + "check");     //사용자로부터 받은 내용을 사용자에게 뿌림, 단 문자열에 # 포함되면 안됨
+                            gui.appendMsg(msg);              //사용자로부터 받은 내용을 서버 gui에 뿌림
+                            //DB에서 정보 뽑기 :)
+                            LocalDate now = LocalDate.now();        //서버에 오늘 날짜도 보내줘야함
+                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+                            String Now = now.format(formatter);
+                            String[] Dtoken = Now.split("/");
+                            int[] DateToken = new int[3];       //
+                            for(int i=0; i<3; i++){
+                                DateToken[i] = Integer.parseInt(Dtoken[i]);
+                            }
+                            String result = "";
+                            Schedule=connection.bringSchedule(nick, DateToken[0], DateToken[1], DateToken[2]);
+                            for(int i=0; i<Schedule.length; i++){
+                                for(int j=0; j<Schedule[i].length; j++){
+                                    if(j==0) {
+                                        Schedule[i][j] = connection.getSchedulename(Schedule[i][j]);
+                                        result = result + Schedule[i][j] + "%";
+                                    }
+                                    else
+                                        result = result + Schedule[i][j] + "%";
+                                }
+                                result = result.substring(0, result.length() - 1);
+                                result = result + "@";      //각각 Schedule 정보 나누기 @ :)
+
+                            }
+                            if(!result.equals(""))
+                                result = result.substring(0, result.length()-1);
+                            System.out.println(result);
+                            gui.appendMsg(result);
+                            sendOne(nick, "sch#" + result);
+                            //RoadMap
+                            String[] RoadMap_info;
+                            String[] RoadMap_id_all = connection.bringAllRoadmapId();
+                            String RoadMap_msg = "";
+                            for(int i=0; i<RoadMap_id_all.length; i++) {
+                                RoadMap_info = connection.bringRoadmap(RoadMap_id_all[i]);
+                                System.out.println(RoadMap_info[0]);
+                                for(int j=0; j<RoadMap_info.length; j++) {
+                                    RoadMap_msg = RoadMap_msg + RoadMap_info[j] + "%";
+                                }
+                                RoadMap_msg += connection.getRoadmapname(RoadMap_id_all[i]);
+                                RoadMap_msg += "%" + RoadMap_id_all[i];
+                                RoadMap_msg = RoadMap_msg + "@";
+                            }
+                            RoadMap_msg = RoadMap_msg.substring(0, RoadMap_msg.length()-1);
+                            gui.appendMsg(RoadMap_msg);
+                            sendOne(nick, "road#" + RoadMap_msg);       //
+
+                            //sendOne(nick, "sch#" + DB정보);      //사용자와 연결된 모든 schedule 정보을 Calendar에 준다.(구현), 이중배열 이용하기.
+                            //sendOne(nick, "Tsch" + DB정보);      //사용자와 연결된 schedule 정보를 일일 스케쥴에(panel2) 준다.(미구현)
+                            //sendOne(nick, "Sroad" + DB정보);     //현재 저장된 모든 RoadMap 정보를 3장 오른쪽에 준다.(미구현)
+                            //sendOne(nick, "Myroad" + DB정보);    //사용자와 연결된 RoadMap 정보를 2장 오른쪽에 준다.(미구현)
+                        }
+
                     }
                     else if("pwd1".equals(token[0])) {      //아이디는 nick, 비밀번호는 pwd1 -> DB에 저장하기
                         System.out.println("checkServer");
@@ -119,6 +297,7 @@ public class serverBackground {
                         gui.appendMsg(msg);
                     }
                     else if("pwd2".equals(token[0])) {   //회원가입 완료, 로그인과 같은 작용 ㅇㅇ
+                        connection.signUp(nick, token[1]);
                         System.out.println("checkServer");
                         sendOne(nick, "pwd2#" + token[1]);
                         gui.appendMsg(msg);

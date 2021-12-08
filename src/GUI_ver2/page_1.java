@@ -18,7 +18,7 @@ class panel1 extends JPanel{   // 1 페이지 panel 생성
     private Vector<Point> v_M = new Vector<Point>();
     private Vector<Point> v = new Vector<Point>();
     private Image image;        // 배경 이미지
-    private Image starProcedure[] = new Image[7]; // 진행도를 별자리로 나타내기........... 
+    private Image starProcedure[] = new Image[7]; // 진행도를 별자리로 나타내기...........
     private JButton star[] = new JButton[7]; // 별자리 그림
     int count = 0;
     private int[] progress; // 일정 진행률
@@ -189,9 +189,10 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
         }
 
         this.trayIcon = trayIcon;
+        client.setSgui(this);
         drawPanel();
 
-        client.setSgui(this);
+
     }
 
     private void drawPanel() {
@@ -360,7 +361,7 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
         content.add(background);
     }
 
-    class addingSchedule_gui extends JPanel {
+    public class addingSchedule_gui extends JPanel {
         JTextField goal_txt;
         JTextField comment_txt;
         JTextField URL;
@@ -621,10 +622,12 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
         }
 
         public String getURL() {
+            if(URL.getText() == null)
+                return null;
             return URL.getText();
         }
 
-        private void addFeatures() {
+        public void addFeatures() {
             /*
              타이머 추가
              */
@@ -664,8 +667,84 @@ class panel2 extends JPanel{    // 2 페이지 panel 생성
         }
     }
     public void appendSchedule1(String msg) {
-        String[] token = msg.split("#");
-        this.schedule = token[1];
+        drawPanel();
+
+        System.out.println(msg);
+        String[][] Sche = new String[7][6];
+        String[] Token = msg.split("@");
+        for(int i=0; i<Token.length; i++) {
+            String[] token = Token[i].split("%");
+            for(int j=0; j<6; j++) {
+                Sche[i][j] = token[j];
+            }
+            this.plans[planCnt].setText("* [" + token[1] + " ~ " +
+                    token[2] + "] " +
+                    token[0] + " - " + token[4]);
+            this.plans[planCnt].setFont(new Font("맑은 고딕", Font.PLAIN, 14));
+
+            this.checklist[planCnt].setVisible(true); // 체크 박스 표시
+            this.checklist[planCnt].setEnabled(true);
+
+            this.urls[planCnt] = null;       //url도 받아와야 된다.
+
+            for(JLabel plan_ : this.plans) {
+                plan_.setVisible(true);
+            }
+
+            String[] Stoken = token[1].split(":");
+            String[] Etoken = token[2].split(":");
+            int[] StartToken = new int[2];
+            int[] EndToken = new int[2];
+            for(int k=0; k<2; k++){
+                StartToken[k] = Integer.parseInt(Stoken[k]);
+            }
+            for(int k=0; k<2; k++){
+                EndToken[k] = Integer.parseInt(Etoken[k]);
+            }
+            /*
+             타이머 추가
+             */
+            String startTime = token[1];
+            String endTime = token[2];
+            long timerSec = ((EndToken[0] - StartToken[0]) * 60 +
+                    (EndToken[1] - StartToken[1])) * 60; // 걸리는 시간을 초 단위로 저장
+
+            Timer timer = new Timer(startTime, timerSec);
+            timer.start();
+            this.timers.add(timer);
+
+            /*
+            tray alert 추가
+            */
+            LocalDateTime currentTime = LocalDateTime.now();
+            // 지금보다 뒤의 시간으로 세팅하면 오늘 중 알람
+            if(currentTime.getHour() <= StartToken[0] && currentTime.getMinute() < StartToken[1]) {
+                this.trayIcon[0].addAlert(token[0], token[4],
+                        currentTime.getYear(), currentTime.getMonthValue(), currentTime.getDayOfMonth(),
+                        StartToken[0], StartToken[1],
+                        TrayIcon.MessageType.NONE);
+            }
+            // 지금보다 앞의 시간으로 세팅하면 내일 중 알람
+            else {
+                this.trayIcon[0].addAlert(token[0], token[4],
+                        currentTime.getYear(), currentTime.getMonthValue(), currentTime.getDayOfMonth() + 1,
+                        StartToken[0], StartToken[1], TrayIcon.MessageType.NONE);
+            }
+
+            /*
+             웹크롤링 추가
+            */
+            if(token[5] != "타이머") {
+                this.usingCrawler[planCnt] = true;
+            }
+
+            //setVisible(false);
+            removeAll();
+            drawPanel();
+            revalidate();
+            repaint();
+            this.planCnt++;
+        }
     }
 }
 

@@ -5,14 +5,16 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Vector;
+import static GUI_ver2.Main.client;
 
 class panel5 extends JPanel {     // 5 페이지 panel 생성
     //DB에서 받은 요소를 이 벡터에 넣는다. 그리고 그것을 이용
-    private Vector<String> goals = new Vector<>();
+    private Vector<String> goals = new Vector<>();  //goals, times, comments, howto
     private Vector<String> times = new Vector<>();
     private Vector<String> comments = new Vector<>();
     private Vector<String> howto = new Vector<>();
-
+    JLabel[] list_scd = new JLabel[5];
+    JPanel List_scd = new JPanel(new GridLayout(6,1));
     private String year;
     private String month;
     private String day;
@@ -26,7 +28,7 @@ class panel5 extends JPanel {     // 5 페이지 panel 생성
         JPanel date_Panel = new JPanel();
         date_Panel.setLayout(null);
 
-        JPanel List_scd = new JPanel(new GridLayout(6,1));
+
         JLabel title = new JLabel("리스트");
         JLabel[] list_scd = new JLabel[5];
         List_scd.add(title);
@@ -50,6 +52,8 @@ class panel5 extends JPanel {     // 5 페이지 panel 생성
                 year = Cal.getYear_num();
                 month = Cal.getMonth_num();
                 day = Cal.getDay_num();
+                String CalDate = year + "/" + month + "/" + day;
+
 
                 String date_change = year+"년 "+month+"월 "+day+"일";
 
@@ -60,6 +64,8 @@ class panel5 extends JPanel {     // 5 페이지 panel 생성
                 date_Panel.add(date_old);
                 date_Panel.setVisible(false);
                 date_Panel.setVisible(true);
+
+                client.sendCalendar(CalDate);
             }
         });
 
@@ -84,6 +90,8 @@ class panel5 extends JPanel {     // 5 페이지 panel 생성
         date_Panel.setPreferredSize(new Dimension(350,100));
         add(BorderLayout.CENTER, SouthPanel);
         add(BorderLayout.NORTH, Cal);
+
+        client.setCgui(this);
     }
 
     public class Cal_Inf extends JFrame{
@@ -286,6 +294,26 @@ class panel5 extends JPanel {     // 5 페이지 panel 생성
         add(BorderLayout.CENTER, SouthPanel);
         add(BorderLayout.NORTH, Cal);
     }
+
+    public void appendCal(String Cal) {     //goals, times, comments, howto
+        System.out.println(Cal + "5panel 도착");
+        String[] Token = Cal.split(("@"));
+        for(int i=0; i<Token.length; i++){
+            String[] token = Token[i].split("%");
+            goals.add(token[0]);
+            times.add(token[1]+"~"+token[2]);
+            comments.add(token[4]);
+            howto.add(token[5]);
+        }
+        System.out.println(goals.elementAt(0));
+
+        for (int i = 0; i < goals.size(); i++) {
+            list_scd[i].setText("* " + goals.elementAt(i) +" "+ times.elementAt(i) + " " + comments.elementAt(i) + " " + howto.elementAt(i));
+            list_scd[i].setVisible(true);
+            List_scd.add(list_scd[i]);
+        }
+
+    }
 }
 
 class panel6 extends JPanel{    // 6 페이지 panel 생성
@@ -320,6 +348,8 @@ class panel6 extends JPanel{    // 6 페이지 panel 생성
             edit_btn.add(btn);
         }
         drawPanel();
+
+        client.setJgui(this);
     }
 
     private void drawPanel() {
@@ -515,6 +545,10 @@ class panel6 extends JPanel{    // 6 페이지 panel 생성
         public String getAll(){
             return "* "+goal_Data+", 기간 : "+period_Data+"달, "+dayofWeek;
         }
+    }
+
+    public void appendRId(String msg) {
+        System.out.println(msg + " 6패널 도착");
     }
 }
 

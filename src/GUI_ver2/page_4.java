@@ -6,6 +6,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Vector;
+import static GUI_ver2.Main.client;
 
 class panel7 extends JPanel {
     private Image image; // 배경이미지
@@ -97,19 +98,19 @@ class panel7 extends JPanel {
         JButton Sat = new JButton("토");
         Sat.setFont(new Font("굴림", Font.PLAIN, 10));
         Sat.setBounds(310, 316, 45, 30);
-        Sat.setForeground(Color.white);
         Sat.setOpaque(false);
         Sat.setContentAreaFilled(false);
         Sat.setFocusPainted(false);
+        Sat.setForeground(Color.white);
         add(Sat);
 
         JButton Sun = new JButton("일");
         Sun.setFont(new Font("굴림", Font.PLAIN, 10));
         Sun.setBounds(355, 316, 45, 30);
-        Sun.setForeground(Color.white);
         Sun.setOpaque(false);
         Sun.setContentAreaFilled(false);
         Sun.setFocusPainted(false);
+        Sun.setForeground(Color.white);
         add(Sun);
 
         JButton Save_btn = new JButton("Save RoadMap");
@@ -245,15 +246,15 @@ class panel7 extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // 확인용
-                System.out.println(goToDB());
-                System.out.println(getTime());
+                System.out.println(goToDB());   //DB에 들어갈 내용
+                client.sendRoadMap(goToDB());
                 Save_btn.setText("생성되었습니다.");
                 Save_btn.setEnabled(false);
             }
         });
 
 
-        image = new ImageIcon("src\\GUI_ver1\\image\\login_background_1.jpg").getImage();
+        image = new ImageIcon("src\\GUI_ver2\\image\\login_background_1.jpg").getImage();
         JPanel background = new JPanel() {
             public void paintComponent(Graphics g) {
                 Dimension d = getSize();
@@ -283,13 +284,24 @@ class panel7 extends JPanel {
     }
 
     public String goToDB(){
-        return getgoal()+"%"+getperiod()+"%"+ getTime()+"%"+WeekOfDay();
+        return getgoal()+"%"+getperiod()+"%"+getTime()+"%"+WeekOfDay();
     }
 }
 
 class panel8 extends JPanel {
     private JTextField Search_txt;
     private Vector<List_RoadMap> V_List = new Vector<List_RoadMap>();
+    JPanel Center;
+
+    Vector<String> Month = new Vector<>();
+    Vector<String> Week = new Vector<>();
+    Vector<String> Comment = new Vector<>();
+    Vector<String> Aim = new Vector<>();
+    Vector<String> RoadId = new Vector<>();
+
+
+    int num;
+
     private int cnt=0;
     public panel8() {
         setLayout(null);
@@ -312,6 +324,13 @@ class panel8 extends JPanel {
         search_btn.setForeground(Color.white);
         search_btn.setContentAreaFilled(false);
         add(search_btn);
+
+        search_btn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                client.sendSearch(Search_txt.getText());
+            }
+        });
 
         JPanel North = new JPanel();
         North.setBounds(55,110,340,20);
@@ -343,12 +362,38 @@ class panel8 extends JPanel {
         Join.setBorder(new LineBorder(Color.BLACK));
         North.add(Join);
 
-        JPanel Center = new JPanel();
+//        for(int i=0; i<num; i++){
+//            Center.add(V_List.elementAt(i));
+//        }
+
+        Center = new JPanel();
         Center.setBounds(55,130,340,250);
         Center.setLayout(null);
         Center.setBackground(new Color(0,0,0,0));
         add(Center);
 
+        JButton refresh_btn = new JButton("새로고침");
+        refresh_btn.setBounds(320, 50, 80, 20);
+        refresh_btn.setFont(new Font("굴림", Font.PLAIN, 10));
+        refresh_btn.setForeground(Color.white);
+        refresh_btn.setContentAreaFilled(false);
+        add(refresh_btn);
+
+        refresh_btn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Center.setVisible(false);
+                Center.removeAll();
+                System.out.println(V_List.size());
+                for (int i = 0; i < V_List.size(); i++) {
+                    V_List.elementAt(i).setBounds(0,i*25,340,25);
+                    V_List.elementAt(i).setBackground(new Color(0,0,0,0));
+                    Center.add(V_List.elementAt(i));
+                    System.out.println(V_List.elementAt(i));
+                }
+                Center.setVisible(true);
+            }
+        });
 
         JPanel South = new JPanel(new GridLayout(1,2));
         South.setBounds(55,420,340,25);
@@ -366,17 +411,21 @@ class panel8 extends JPanel {
 //        if (V_List.size()<10){
 //            right.setEnabled(false);
 //        }
+        if(Month.size() < 10)
+            num=Month.size();
+        else if(Month.size()>=10)
+            num=10;
 
-
-
-        for (int i = 0; i < 10; i++) {
-            List_RoadMap new_List = new List_RoadMap(i+1+10*cnt);
-            new_List.setBounds(0,i*25,340,25);
-            new_List.setBackground(new Color(0,0,0,0));
-            new_List.setBorder(new LineBorder(Color.BLACK));
-            V_List.add(new_List);
-            Center.add(V_List.elementAt(i));
-        }
+//        for (int i = 0; i < num; i++) {
+//            List_RoadMap new_List = new List_RoadMap(Month.elementAt(i+10*cnt), Week.elementAt(i+10*cnt), Comment.elementAt(i+10*cnt)
+//                    , Aim.elementAt(i+10*cnt), RoadId.elementAt(i+10*cnt));
+//            new_List.setBounds(0,i*25,340,25);
+//            new_List.setBackground(new Color(0,0,0,0));
+//            new_List.setBorder(new LineBorder(Color.BLACK));
+//
+//            V_List.add(new_List);
+//            Center.add(V_List.elementAt(i));
+//        }
 
         left.addActionListener(new ActionListener() {
             @Override
@@ -386,7 +435,8 @@ class panel8 extends JPanel {
                 Center.setVisible(false);
                 Center.removeAll();
                 for (int i = 0; i < 10; i++) {
-                    List_RoadMap new_List = new List_RoadMap(i+1+10*cnt);
+                    List_RoadMap new_List = new List_RoadMap(Month.elementAt(i+10*cnt), Week.elementAt(i+10*cnt), Comment.elementAt(i+10*cnt)
+                            , Aim.elementAt(i+10*cnt), RoadId.elementAt(i+10*cnt));
                     new_List.setBounds(0,i*25,340,25);
                     new_List.setBackground(new Color(0,0,0,0));
                     new_List.setBorder(new LineBorder(Color.BLACK));
@@ -408,7 +458,8 @@ class panel8 extends JPanel {
                 Center.setVisible(false);
                 Center.removeAll();
                 for (int i = 0; i < 10; i++) {
-                    List_RoadMap new_List = new List_RoadMap(i+1+10*cnt);
+                    List_RoadMap new_List = new List_RoadMap(Month.elementAt(i+10*cnt), Week.elementAt(i+10*cnt), Comment.elementAt(i+10*cnt)
+                            , Aim.elementAt(i+10*cnt), RoadId.elementAt(i+10*cnt));
                     new_List.setBounds(0,i*25,340,25);
                     new_List.setBackground(new Color(0,0,0,0));
                     new_List.setBorder(new LineBorder(Color.BLACK));
@@ -420,7 +471,6 @@ class panel8 extends JPanel {
                     left.setEnabled(true);
             }
         });
-
 
 
         // 배경화면 생성
@@ -437,6 +487,75 @@ class panel8 extends JPanel {
         background.setBounds(0,0,450, 530);
         add(background);
 
+        client.setRgui(this);
+    }
+
+    public void appendSearch(String msg) {
+        System.out.println(msg + " Search 도착");
+    }
+
+    public void appendRoadMap(String msg) { //String Month, String Week, String Comment, String Aim, String RoadId
+        //removeAll();
+        V_List.clear();
+        Month.clear();
+        Week.clear();
+        Comment.clear();
+        Aim.clear();
+        RoadId.clear();
+        Center.removeAll();
+
+        System.out.println(msg + "panel8로 옴");
+        String[] Token = msg.split("@");
+        for (int i = 0; i<Token.length; i++) {     //@+1
+            for (int j = 0; j < 6; j++) {
+                if(j!=2){
+                    String[] token = Token[i].split("%");
+                    switch (j) {
+                        case 0:
+                            Month.add(token[j]);
+                            break;
+                        case 1:
+                            Week.add(token[j]);
+                            break;
+                        case 3:
+                            Comment.add(token[j]);
+                            break;
+                        case 4:
+                            Aim.add(token[j]);
+                            break;
+                        case 5:
+                            RoadId.add(token[j]);
+                            break;
+                    }
+                }
+            }
+        }
+        if(Month.size() < 10)
+            num=Month.size();
+        else if(Month.size()>=10)
+            num=10;
+
+
+        System.out.println(V_List.size() + "V_List 사이즈입니다 :)");
+
+        for (int i = 0; i < num; i++) {
+            //Center.setVisible(false);
+            List_RoadMap new_List = new List_RoadMap(Month.elementAt(i+10*cnt), Week.elementAt(i+10*cnt), Comment.elementAt(i+10*cnt)
+                    , Aim.elementAt(i+10*cnt), RoadId.elementAt(i+10*cnt));
+            new_List.setBounds(0,i*25,340,25);
+            new_List.setBackground(new Color(0,0,0,0));
+            new_List.setBorder(new LineBorder(Color.BLACK));
+
+
+            V_List.add(new_List);
+            Center.add(V_List.elementAt(i));
+            //Center.setVisible(true);
+        }
+        System.out.println(V_List.size() + "V_List 사이즈");
+
+        //drawPanel();
+        revalidate();
+        repaint();
     }
 }
 

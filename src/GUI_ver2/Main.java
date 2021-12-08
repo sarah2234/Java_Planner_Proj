@@ -190,7 +190,6 @@ public class Main extends JFrame {
                         page_3.setVisible(false);
                         login_gui.setVisible(true); // 임시로 login 페이지 띄우기
                     }
-
                     setVisible(true);
                 }
             });
